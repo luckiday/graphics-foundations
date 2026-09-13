@@ -2,7 +2,7 @@
 
 **You will learn:** the stages a triangle passes through on its way to the screen, which of those stages you program, and enough GLSL to write both kinds of shaders.
 
-**Demo:** [01 · Hello, triangle](../demos/01-hello-triangle.html)
+**Demo:** [01 · Hello, triangle](https://luckiday.github.io/graphics-foundations/demos/01-hello-triangle.html) · [source](../demos/01-hello-triangle.html)
 
 ---
 
@@ -158,7 +158,7 @@ void main() {
 
 ## 1.5 Try it
 
-Open [demo 01](../demos/01-hello-triangle.html):
+Open [demo 01](https://luckiday.github.io/graphics-foundations/demos/01-hello-triangle.html):
 
 - **Barycentric weights as color.** The rasterizer's interpolation weights become visible. Each corner is pure red, green or blue, and every interior pixel is a weighted mix. Chapter 2 names these weights.
 - **gl_FragCoord checkerboard.** A pattern computed per pixel from screen position alone. It does not move when you rotate the triangle, because it is not attached to the geometry.

@@ -2,7 +2,7 @@
 
 **You will learn:** the matrices for translation, scaling, rotation, shear and reflection; how to invert them; why their order matters; and how to build hierarchical, animated models by multiplying matrices together.
 
-**Demo:** [02 · Transformations and their order](../demos/02-transformations.html)
+**Demo:** [02 · Transformations and their order](https://luckiday.github.io/graphics-foundations/demos/02-transformations.html) · [source](../demos/02-transformations.html)
 
 ---
 
@@ -143,7 +143,7 @@ M = \begin{bmatrix} 0&-1&0&2 \\ -1&0&0&1 \\ 0&0&1&0 \\ 0&0&0&1 \end{bmatrix}.
 
 The stem tip at local $`(0, 2)`$ maps to $`(0\cdot0 - 1\cdot2 + 2,\; -1\cdot0 + 0\cdot2 + 1) = (0, 1)`$: two units left of the origin. An arm tip at local $`(1, 2)`$ maps to $`(0, 0)`$, one unit below the stem tip. Both readings agree.
 
-Try other orders in [demo 02](../demos/02-transformations.html), which draws every intermediate frame.
+Try other orders in [demo 02](https://luckiday.github.io/graphics-foundations/demos/02-transformations.html), which draws every intermediate frame.
 
 ## 4.5 Hierarchical modeling
 

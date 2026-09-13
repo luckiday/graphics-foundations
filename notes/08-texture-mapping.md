@@ -2,7 +2,7 @@
 
 **You will learn:** how texture coordinates attach an image to a surface; common ways to generate them; how GPUs filter textures to avoid aliasing (bilinear filtering, mipmaps); why texture coordinates must be interpolated with perspective correction; and how bump, normal, displacement and parallax maps fake geometric detail.
 
-**Demo:** [05 · Texture mapping](../demos/05-texture-mapping.html)
+**Demo:** [05 · Texture mapping](https://luckiday.github.io/graphics-foundations/demos/05-texture-mapping.html) · [source](../demos/05-texture-mapping.html)
 
 ---
 

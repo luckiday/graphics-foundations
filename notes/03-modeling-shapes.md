@@ -2,7 +2,7 @@
 
 **You will learn:** how curved shapes are approximated by triangles, how meshes are stored (vertex arrays, index lists, triangle strips), what winding order decides, and why the same corner sometimes needs several copies with different normals.
 
-**Try it:** [TinyGraphics `Surfaces_Demo`](https://github.com/intro-graphics/TinyGraphics.js/blob/v2/examples/surfaces-demo.js) · [demo 04](../demos/04-lighting-and-shading.html) (flat vs. smooth normals)
+**Try it:** [TinyGraphics `Surfaces_Demo`](https://github.com/intro-graphics/TinyGraphics.js/blob/v2/examples/surfaces-demo.js) · [demo 04](https://luckiday.github.io/graphics-foundations/demos/04-lighting-and-shading.html) (flat vs. smooth normals)
 
 ---
 

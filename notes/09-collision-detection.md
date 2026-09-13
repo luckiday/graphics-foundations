@@ -2,7 +2,7 @@
 
 **You will learn:** why testing every triangle against every other triangle is hopeless; how bounding volumes (spheres, axis-aligned boxes and oriented boxes) make collision tests cheap; the separating axis theorem; broad-phase techniques that avoid testing every pair; and the time-stepping problems that let fast objects pass through each other.
 
-**Demo:** [07 · Collision detection with bounding volumes](../demos/07-bounding-volumes.html)
+**Demo:** [07 · Collision detection with bounding volumes](https://luckiday.github.io/graphics-foundations/demos/07-bounding-volumes.html) · [source](../demos/07-bounding-volumes.html)
 
 ---
 

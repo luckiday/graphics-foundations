@@ -2,7 +2,7 @@
 
 **You will learn:** the Phong reflection model and Blinn's variant; directional, point and spot lights; the difference between flat, Gouraud and Phong shading; how to transform normals correctly; and how to compute vertex normals for a mesh.
 
-**Demo:** [04 · Lighting and shading](../demos/04-lighting-and-shading.html)
+**Demo:** [04 · Lighting and shading](https://luckiday.github.io/graphics-foundations/demos/04-lighting-and-shading.html) · [source](../demos/04-lighting-and-shading.html)
 
 ---
 
