@@ -2,7 +2,7 @@
 
 **You will learn:** how the view matrix places the camera; how orthographic and perspective projection matrices are derived; what the perspective divide, clipping and the viewport do; why depth precision is uneven; and how the z-buffer hides surfaces behind other surfaces.
 
-**Demo:** [03 · Camera and projection](../demos/03-camera-and-projection.html)
+**Demo:** [03 · Camera and projection](https://luckiday.github.io/graphics-foundations/demos/03-camera-and-projection.html) · [source](../demos/03-camera-and-projection.html)
 
 ---
 

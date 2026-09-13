@@ -2,7 +2,7 @@
 
 **You will learn:** how ray tracing inverts the rasterization pipeline; how to generate a ray for each pixel; ray intersections with spheres, planes and triangles; shadow, reflection and refraction rays; the ray tree and its cost; and how acceleration structures make ray tracing practical.
 
-**Demo:** [06 · Ray tracing](../demos/06-ray-tracing.html)
+**Demo:** [06 · Ray tracing](https://luckiday.github.io/graphics-foundations/demos/06-ray-tracing.html) · [source](../demos/06-ray-tracing.html)
 
 ---
 

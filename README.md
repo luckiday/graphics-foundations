@@ -15,17 +15,17 @@ Read in order. Each chapter lists what you will learn, explains it with figures,
 | # | Chapter | Topics | Demo |
 |---|---|---|---|
 | 0 | [Setup and JavaScript for graphics](notes/00-setup-and-javascript.md) | tools, modules, classes, closures, typed arrays, the frame loop | |
-| 1 | [The rendering pipeline and GLSL](notes/01-webgl-pipeline-and-glsl.md) | vertex/fragment shaders, rasterization, clip space, GLSL | [01](demos/01-hello-triangle.html) |
+| 1 | [The rendering pipeline and GLSL](notes/01-webgl-pipeline-and-glsl.md) | vertex/fragment shaders, rasterization, clip space, GLSL | [01](https://luckiday.github.io/graphics-foundations/demos/01-hello-triangle.html) |
 | 2 | [Points, vectors and coordinate systems](notes/02-points-vectors-coordinates.md) | affine spaces, homogeneous coordinates, barycentric coordinates, dot and cross products | |
 | 3 | [Modeling shapes with triangles](notes/03-modeling-shapes.md) | discretization, indexed meshes, strips, winding, flat vs. smooth normals | |
-| 4 | [Transformations](notes/04-transformations.md) | translate, rotate, scale, shear, reflect; order; hierarchies; animation | [02](demos/02-transformations.html) |
+| 4 | [Transformations](notes/04-transformations.md) | translate, rotate, scale, shear, reflect; order; hierarchies; animation | [02](https://luckiday.github.io/graphics-foundations/demos/02-transformations.html) |
 | 5 | [Change of basis](notes/05-change-of-basis.md) | frames, converting coordinates, the camera as a frame | |
-| 6 | [Viewing and projection](notes/06-viewing-and-projection.md) | look-at, orthographic and perspective derivations, clipping, z-buffer | [03](demos/03-camera-and-projection.html) |
-| 7 | [Lighting and shading](notes/07-lighting-and-shading.md) | Phong and Blinn–Phong, light types, flat/Gouraud/Phong shading, normal matrix | [04](demos/04-lighting-and-shading.html) |
-| 8 | [Texture mapping](notes/08-texture-mapping.md) | uv mapping, filtering, mipmaps, perspective-correct interpolation, bump/normal/displacement | [05](demos/05-texture-mapping.html) |
-| 9 | [Collision detection](notes/09-collision-detection.md) | bounding volumes, separating axis theorem, broad phase, time stepping | [07](demos/07-bounding-volumes.html) |
+| 6 | [Viewing and projection](notes/06-viewing-and-projection.md) | look-at, orthographic and perspective derivations, clipping, z-buffer | [03](https://luckiday.github.io/graphics-foundations/demos/03-camera-and-projection.html) |
+| 7 | [Lighting and shading](notes/07-lighting-and-shading.md) | Phong and Blinn–Phong, light types, flat/Gouraud/Phong shading, normal matrix | [04](https://luckiday.github.io/graphics-foundations/demos/04-lighting-and-shading.html) |
+| 8 | [Texture mapping](notes/08-texture-mapping.md) | uv mapping, filtering, mipmaps, perspective-correct interpolation, bump/normal/displacement | [05](https://luckiday.github.io/graphics-foundations/demos/05-texture-mapping.html) |
+| 9 | [Collision detection](notes/09-collision-detection.md) | bounding volumes, separating axis theorem, broad phase, time stepping | [07](https://luckiday.github.io/graphics-foundations/demos/07-bounding-volumes.html) |
 | 10 | [Shadows, mirrors and transparency](notes/10-shadows-mirrors-blending.md) | shadow mapping, planar mirrors, alpha blending, premultiplied alpha | |
-| 11 | [Ray tracing](notes/11-ray-tracing.md) | ray generation, intersections, recursive rays, ray trees, acceleration | [06](demos/06-ray-tracing.html) |
+| 11 | [Ray tracing](notes/11-ray-tracing.md) | ray generation, intersections, recursive rays, ray trees, acceleration | [06](https://luckiday.github.io/graphics-foundations/demos/06-ray-tracing.html) |
 | 12 | [Building an interactive graphics project](notes/12-building-a-graphics-project.md) | planning, timing and state machines, particles, skyboxes, picking, composition, color | |
 
 **Practice:** [Problems I — foundations, transformations, viewing](exercises/midterm-practice.md) · [Problems II — lighting, textures, collisions, ray tracing](exercises/final-practice.md). Each set has full worked solutions.
