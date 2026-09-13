@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06 · Ray tracing</title>
+<link rel="stylesheet" href="lib/style.css">
+<script type="importmap">{"imports": {"tiny-graphics/": "https://intro-graphics.github.io/TinyGraphics.js/v2/"}}</script>
+</head>
+<body>
+<header>
+  <h1>06 · Ray tracing</h1>
+  <p>A Whitted-style ray tracer in a fragment shader: one primary ray per pixel, shadow rays toward the light, and
+    mirror reflection rays up to a maximum depth. Drag to orbit. Companion to <a href="../notes/11-ray-tracing.md">notes/11</a>.</p>
+</header>
+<div class="demo">
+  <div id="widget"></div>
+  <details><summary>How it is built</summary>
+    <p>The only geometry is one triangle that covers the whole screen. Its fragment shader runs once per pixel,
+      builds the primary ray from the camera basis (the same u, v, n as <code>Mat4.look_at</code>), and intersects it
+      with three spheres and a plane. Recursion is unrolled into a loop: with pure mirror reflection, each level of the
+      ray tree has a single branch.</p>
+  </details>
+</div>
+<script type="module">
+import {tiny} from 'tiny-graphics/common.js';
+import {orbit_controls} from './lib/tg-helpers.js';
+
+const {vec3, color, Mat4, Material, Shader, Vertex_Buffer, Scene, Canvas_Widget} = tiny;
+
+// Three vertices whose triangle covers the whole canvas (the parts outside NDC are clipped).
+class Fullscreen_Triangle extends Vertex_Buffer {
+    constructor() {
+        super("position");
+        this.arrays.position = [vec3(-1, -1, 0), vec3(3, -1, 0), vec3(-1, 3, 0)];
+    }
+}
+
+class Ray_Tracing_Shader extends Shader {
+    vertex_glsl_code() {
+        return `#version 300 es
+            in vec3 position;
+            out vec2 ndc;
+            void main() { ndc = position.xy; gl_Position = vec4(position, 1.0); }`;
+    }
+
+    fragment_glsl_code() {
+        return `#version 300 es
+            precision highp float;
+            precision mediump int;
+            in vec2 ndc;
+            uniform vec3 eye, cam_u, cam_v, cam_n, light;
+            uniform float tan_half_fov, aspect;
+            uniform int max_depth, view_mode;
+            uniform bool shadows;
+            out vec4 frag_color;
+
+            const int NSPH = 3;
+            const vec4 SPH[NSPH] = vec4[NSPH](vec4(-1.6, 1.0, 0.0, 1.0), vec4(0.9, 0.75, 0.9, 0.75), vec4(0.4, 1.6, -2.0, 1.6));
+            const vec3 ALBEDO[NSPH] = vec3[NSPH](vec3(0.85, 0.3, 0.25), vec3(0.2, 0.45, 0.85), vec3(0.9));
+            const float MIRROR[NSPH] = float[NSPH](0.15, 0.3, 0.8);
+
+            // |o + t d − c|² = r², with d unit length: t² + 2bt + c = 0.  Return the nearest t > ε, or −1.
+            float hit_sphere(vec3 o, vec3 d, vec4 s) {
+                vec3 m = o - s.xyz;
+                float b = dot(m, d), c = dot(m, m) - s.w * s.w, disc = b * b - c;
+                if (disc < 0.0) return -1.0;
+                float q = sqrt(disc);
+                if (-b - q > 1e-3) return -b - q;
+                return -b + q > 1e-3 ? -b + q : -1.0;
+            }
+
+            float trace(vec3 o, vec3 d, out vec3 N, out vec3 albedo, out float mirror) {
+                float best = 1e9;
+                for (int i = 0; i < NSPH; i++) {
+                    float t = hit_sphere(o, d, SPH[i]);
+                    if (t > 0.0 && t < best) { best = t; N = normalize(o + t * d - SPH[i].xyz); albedo = ALBEDO[i]; mirror = MIRROR[i]; }
+                }
+                if (abs(d.y) > 1e-6) {                               // the plane y = 0
+                    float t = -o.y / d.y;
+                    if (t > 1e-3 && t < best) {
+                        best = t; N = vec3(0, 1, 0);
+                        vec3 p = o + t * d;
+                        float k = mod(floor(p.x) + floor(p.z), 2.0);
+                        albedo = mix(vec3(0.92), vec3(0.35), k) * (1.0 - smoothstep(10.0, 30.0, length(p.xz)));
+                        mirror = 0.1;
+                    }
+                }
+                return best;
+            }
+
+            void main() {
+                vec3 d = normalize(ndc.x * tan_half_fov * aspect * cam_u + ndc.y * tan_half_fov * cam_v - cam_n);
+                vec3 o = eye, result = vec3(0), weight = vec3(1), first_normal = vec3(0);
+                int bounces = 0;
+                for (int level = 0; level <= 6; level++) {
+                    vec3 N, albedo; float mirror;
+                    float t = trace(o, d, N, albedo, mirror);
+                    if (t >= 1e9) { result += weight * mix(vec3(1.0), vec3(0.75, 0.83, 0.95), max(d.y, 0.0)); break; }
+                    if (level == 0) first_normal = N;
+                    vec3 p = o + t * d, L = light - p;
+                    float dist = length(L); L /= dist;
+                    vec3 n2; vec3 a2; float m2;
+                    bool lit = !shadows || trace(p + N * 1e-3, L, n2, a2, m2) >= dist;     // the shadow ray
+                    vec3 H = normalize(L - d);
+                    vec3 local = 0.12 * albedo + (lit ? 0.85 * max(dot(N, L), 0.0) * albedo + 0.4 * pow(max(dot(N, H), 0.0), 60.0) : vec3(0));
+                    result += weight * (1.0 - mirror) * local;
+                    bounces = level;
+                    if (level >= max_depth || mirror < 0.01) break;
+                    weight *= mirror;
+                    if (max(weight.r, max(weight.g, weight.b)) < 0.02) break;             // too little left to matter
+                    o = p + N * 1e-3;
+                    d = reflect(d, N);                                                    // the reflection ray
+                }
+                if (view_mode == 1) result = vec3(float(bounces) / 6.0, 0.25, 1.0 - float(bounces) / 6.0);
+                if (view_mode == 2) result = first_normal * 0.5 + 0.5;
+                frag_color = vec4(pow(result, vec3(1.0 / 2.2)), 1.0);
+            }`;
+    }
+
+    update_GPU(gl, gpu, program_state, model_transform, m) {
+        const V = program_state.view_transform;
+        gl.uniform3fv(gpu.eye, program_state.camera_transform.times(tiny.vec4(0, 0, 0, 1)).to3());
+        gl.uniform3fv(gpu.cam_u, V[0].slice(0, 3));
+        gl.uniform3fv(gpu.cam_v, V[1].slice(0, 3));
+        gl.uniform3fv(gpu.cam_n, V[2].slice(0, 3));
+        gl.uniform3fv(gpu.light, m.light);
+        gl.uniform1f(gpu.tan_half_fov, Math.tan(Math.PI / 8));
+        gl.uniform1f(gpu.aspect, m.aspect);
+        gl.uniform1i(gpu.max_depth, m.max_depth);
+        gl.uniform1i(gpu.view_mode, m.view_mode);
+        gl.uniform1i(gpu.shadows, m.shadows ? 1 : 0);
+    }
+}
+
+class Ray_Tracing_Demo extends Scene {
+    constructor() {
+        super();
+        this.widget_options = {aspect: 16 / 10, show_explanation: false};
+        this.screen = new Fullscreen_Triangle();
+        this.material = new Material(new Ray_Tracing_Shader());
+        this.views = ["shaded image", "ray-tree depth that terminated here", "surface normal at the first hit"];
+        Object.assign(this, {max_depth: 3, shadows: true, view: 0, light_azimuth: .8, light_height: 5});
+    }
+
+    make_control_panel() {
+        this.slider("max reflection depth", {min: 0, max: 6, step: 1, value: this.max_depth}, v => this.max_depth = v);
+        this.key_triggered_button("Shadow rays on / off", ["s"], () => this.shadows = !this.shadows);
+        this.key_triggered_button("Next view", ["v"], () => this.view = (this.view + 1) % this.views.length);
+        this.new_line();
+        this.slider("light azimuth", {min: -3.14, max: 3.14, step: .01, value: this.light_azimuth}, v => this.light_azimuth = v);
+        this.slider("light height", {min: .5, max: 10, step: .1, value: this.light_height}, v => this.light_height = v);
+        this.new_line();
+        this.live_string(box => box.textContent = this.readout || "");
+    }
+
+    display(context, program_state) {
+        if (!this.eye_of) this.eye_of = orbit_controls(context.canvas, {radius: 9, yaw: .35, pitch: .25, min: 4, max: 20});
+        const eye = this.eye_of().plus(vec3(0, 1, 0));
+        program_state.set_camera(Mat4.look_at(eye, vec3(0, .8, 0), vec3(0, 1, 0)));
+        const light = vec3(6 * Math.cos(this.light_azimuth), this.light_height, 6 * Math.sin(this.light_azimuth));
+        this.screen.draw(context, program_state, Mat4.identity(), this.material.override({
+            light, aspect: context.aspect_ratio, max_depth: this.max_depth, view_mode: this.view, shadows: this.shadows
+        }));
+        const pixels = context.width * context.height, per_pixel = (this.max_depth + 1) * (this.shadows ? 2 : 1);
+        this.readout = `view: ${this.views[this.view]}\nat most ${this.max_depth + 1} surface hits per pixel` +
+            (this.shadows ? ", each with one shadow ray" : "") +
+            `\n≤ ${per_pixel} rays × ${(pixels / 1e6).toFixed(2)} M pixels = ${(per_pixel * pixels / 1e6).toFixed(1)} M rays per frame`;
+    }
+}
+
+new Canvas_Widget(document.getElementById("widget"), [new Ray_Tracing_Demo()]);
+</script>
+</body>
+</html>

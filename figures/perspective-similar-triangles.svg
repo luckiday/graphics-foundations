@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300" width="700" height="300" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Perspective projection by similar triangles">
+<title>Perspective projection by similar triangles</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="700" height="300" fill="#ffffff"/>
+<line x1="40.0" y1="220.0" x2="660.0" y2="220.0" stroke="#6b6b70" stroke-width="1.2" marker-end="url(#m6b6b70)"/>
+<text x="650.0" y="242.0" fill="#6b6b70" font-size="13" text-anchor="middle">−z</text>
+<circle cx="60.0" cy="220.0" r="5" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="64.0" y="260.0" fill="#222222" font-size="12" text-anchor="middle">eye at origin</text>
+<line x1="260.0" y1="60.0" x2="260.0" y2="250.0" stroke="#2f6fdd" stroke-width="2"/>
+<text x="260.0" y="272.0" fill="#2f6fdd" font-size="13" text-anchor="middle">projection plane z = −d</text>
+<circle cx="540.0" cy="70.0" r="5" stroke="#d9503f" fill="#d9503f" stroke-width="1"/>
+<text x="532.0" y="58.0" fill="#d9503f" font-size="15" text-anchor="end" font-style="italic" font-family="Georgia, 'Times New Roman', serif">P = (x, y, z)</text>
+<line x1="60.0" y1="220.0" x2="540.0" y2="70.0" stroke="#d9503f" stroke-width="1.6" stroke-dasharray="6 4"/>
+<circle cx="260.0" cy="157.5" r="5" stroke="#2f6fdd" fill="#2f6fdd" stroke-width="1"/>
+<text x="250.0" y="147.5" fill="#2f6fdd" font-size="15" text-anchor="end" font-style="italic" font-family="Georgia, 'Times New Roman', serif">P′</text>
+<line x1="540.0" y1="70.0" x2="540.0" y2="220.0" stroke="#6b6b70" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="550.0" y="150.0" fill="#6b6b70" font-size="14" text-anchor="start" font-style="italic" font-family="Georgia, 'Times New Roman', serif">y</text>
+<line x1="260.0" y1="157.5" x2="260.0" y2="220.0" stroke="#2f6fdd" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="268.0" y="200.0" fill="#2f6fdd" font-size="14" text-anchor="start" font-style="italic" font-family="Georgia, 'Times New Roman', serif">y′</text>
+<line x1="60.0" y1="238.0" x2="260.0" y2="238.0" stroke="#2f6fdd" stroke-width="1" marker-end="url(#m2f6fdd)" marker-start="url(#m2f6fdd)"/>
+<text x="160.0" y="256.0" fill="#2f6fdd" font-size="14" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">d</text>
+<line x1="60.0" y1="100.0" x2="540.0" y2="100.0" stroke="#6b6b70" stroke-width="1" marker-end="url(#m6b6b70)" marker-start="url(#m6b6b70)"/>
+<text x="240.0" y="94.0" fill="#6b6b70" font-size="14" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">distance −z</text>
+<text x="350.0" y="34.0" fill="#222222" font-size="16" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">similar triangles:   y′ / d = y / (−z)    ⇒    y′ = d · y / (−z)</text>
+</svg>

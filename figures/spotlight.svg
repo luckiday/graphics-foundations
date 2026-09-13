@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" width="520" height="300" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Spotlight cone test">
+<title>Spotlight cone test</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="520" height="300" fill="#ffffff"/>
+<line x1="40.0" y1="250.0" x2="490.0" y2="250.0" stroke="#222222" stroke-width="2"/>
+<line x1="120.0" y1="50.0" x2="204.5" y2="208.9" stroke="#e08a1e" stroke-width="2.2" marker-end="url(#me08a1e)"/>
+<text x="218.5" y="204.9" fill="#e08a1e" font-size="16" text-anchor="start" font-style="italic" font-family="Georgia, 'Times New Roman', serif">D</text>
+<line x1="120.0" y1="50.0" x2="303.9" y2="204.3" stroke="#e08a1e" stroke-width="1.2" stroke-dasharray="5 4"/>
+<line x1="120.0" y1="50.0" x2="145.1" y2="288.7" stroke="#e08a1e" stroke-width="1.2" stroke-dasharray="5 4"/>
+<path d="M148.16829376715344,102.97685557153562 A60,60 0 0,1 126.2717077960592,109.6713137220964" stroke="#e08a1e" stroke-width="1.2" fill="none"/>
+<text x="142.0" y="126.0" fill="#e08a1e" font-size="15" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">α</text>
+<circle cx="120.0" cy="50.0" r="10" stroke="#e08a1e" fill="#fff4d6" stroke-width="2"/>
+<text x="102.0" y="38.0" fill="#e08a1e" font-size="15" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">P<tspan font-size="10.8" dy="4.2">s</tspan><tspan dy="-4.2">​</tspan></text>
+<circle cx="230.0" cy="250.0" r="5" stroke="#2e9a4f" fill="#2e9a4f" stroke-width="1"/>
+<text x="230.0" y="272.0" fill="#2e9a4f" font-size="14" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">lit</text>
+<circle cx="400.0" cy="250.0" r="5" stroke="#d9503f" fill="#d9503f" stroke-width="1"/>
+<text x="400.0" y="272.0" fill="#d9503f" font-size="14" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">dark</text>
+<line x1="120.0" y1="50.0" x2="400.0" y2="250.0" stroke="#d9503f" stroke-width="1.2" stroke-dasharray="3 3"/>
+<text x="360.0" y="80.0" fill="#222222" font-size="13" text-anchor="middle">P is lit if the angle between</text>
+<text x="360.0" y="100.0" fill="#222222" font-size="13" text-anchor="middle">D and (P − P<tspan font-size="9.4" dy="3.6">s</tspan><tspan dy="-3.6">​</tspan>) is at most α:</text>
+<text x="360.0" y="128.0" fill="#222222" font-size="15" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">normalize(P − P<tspan font-size="10.8" dy="4.2">s</tspan><tspan dy="-4.2">​</tspan>) · D ≥ cos α</text>
+</svg>

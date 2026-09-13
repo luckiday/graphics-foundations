@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 290" width="480" height="290" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Rule of thirds">
+<title>Rule of thirds</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="480" height="290" fill="#ffffff"/>
+<rect x="30.0" y="20.0" width="420.0" height="236.0" rx="4" stroke="#222222" fill="#f7f5ef" stroke-width="1.6"/>
+<path d="M30,189.92 C 150,166.32 330,208.8 450,180.48000000000002 L450,256 L30,256 Z" stroke="none" stroke-width="0" fill="#dfe7d5"/>
+<line x1="170.0" y1="20.0" x2="170.0" y2="256.0" stroke="#d9503f" stroke-width="1.2" stroke-dasharray="6 5"/>
+<line x1="30.0" y1="98.7" x2="450.0" y2="98.7" stroke="#d9503f" stroke-width="1.2" stroke-dasharray="6 5"/>
+<line x1="310.0" y1="20.0" x2="310.0" y2="256.0" stroke="#d9503f" stroke-width="1.2" stroke-dasharray="6 5"/>
+<line x1="30.0" y1="177.3" x2="450.0" y2="177.3" stroke="#d9503f" stroke-width="1.2" stroke-dasharray="6 5"/>
+<circle cx="310.0" cy="98.7" r="26" stroke="#e08a1e" fill="#fbd38d" stroke-width="2"/>
+<circle cx="310.0" cy="98.7" r="5" stroke="#d9503f" fill="#d9503f" stroke-width="1"/>
+<text x="240.0" y="280.0" fill="#6b6b70" font-size="12" text-anchor="middle">put the subject on an intersection, the horizon on a third line</text>
+</svg>

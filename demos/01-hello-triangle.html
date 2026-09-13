@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 · Hello, triangle</title>
+<link rel="stylesheet" href="lib/style.css">
+</head>
+<body>
+<header>
+  <h1>01 · Hello, triangle</h1>
+  <p>The whole pipeline with nothing hidden: a vertex buffer, two shaders, one draw call.
+    Companion to <a href="../notes/01-webgl-pipeline-and-glsl.md">notes/01</a>.</p>
+</header>
+<main>
+  <canvas id="c"></canvas>
+  <aside>
+    <fieldset>
+      <legend>Fragment shader</legend>
+      <select data-key="mode">
+        <option value="0">Interpolated vertex color (a varying)</option>
+        <option value="1">Barycentric weights as color</option>
+        <option value="2">gl_FragCoord checkerboard</option>
+      </select>
+    </fieldset>
+    <fieldset>
+      <legend>Vertex shader</legend>
+      <label>rotate the triangle <output data-out="angle"></output>
+        <input type="range" data-key="angle" min="0" max="6.283" step="0.01" value="0"></label>
+      <label class="check"><input type="checkbox" data-key="wire"> draw as gl.LINE_LOOP</label>
+    </fieldset>
+    <p class="note">Only three vertices ever reach the GPU. Every other pixel's color is produced by the
+      rasterizer interpolating the per-vertex values and the fragment shader running once per pixel.</p>
+    <fieldset>
+      <legend>What TinyGraphics.js does for you</legend>
+      <p class="note">This demo is plain WebGL on purpose. From demo 02 on, the
+        <a href="https://github.com/intro-graphics/TinyGraphics.js">TinyGraphics.js</a> library performs these same calls:
+        <code>Shape</code> creates and fills the buffers and the vertex array, <code>Shader</code> compiles and links
+        the program and looks up every uniform, and <code>Canvas_Widget</code> runs the render loop and resizes the
+        canvas. Your vertex and fragment shaders stay exactly as you write them.</p>
+    </fieldset>
+  </aside>
+</main>
+<script type="module">
+import { getContext, createProgram, resize, bindControls } from './lib/gl.js';
+
+const gl = getContext(document.getElementById('c'));
+
+// Vertex shader: runs once per vertex. Its job is to write gl_Position (clip space)
+// and to hand any per-vertex data to the rasterizer through `out` variables.
+const vs = `#version 300 es
+layout(location = 0) in vec2 a_position;
+layout(location = 1) in vec3 a_color;
+uniform float u_angle;
+uniform float u_aspect;
+out vec3 v_color;
+out vec3 v_bary;
+void main() {
+  float c = cos(u_angle), s = sin(u_angle);
+  vec2 p = mat2(c, s, -s, c) * a_position;      // mat2 is column-major, like every GLSL matrix
+  gl_Position = vec4(p.x / u_aspect, p.y, 0.0, 1.0);
+  v_color = a_color;
+  v_bary = vec3(gl_VertexID == 0, gl_VertexID == 1, gl_VertexID == 2);
+}`;
+
+// Fragment shader: runs once per covered pixel, receiving the interpolated `in`s.
+const fs = `#version 300 es
+precision mediump float;
+in vec3 v_color;
+in vec3 v_bary;
+uniform int u_mode;
+out vec4 outColor;
+void main() {
+  if (u_mode == 0) outColor = vec4(v_color, 1.0);
+  else if (u_mode == 1) outColor = vec4(v_bary, 1.0);
+  else {
+    vec2 cell = floor(gl_FragCoord.xy / 24.0);
+    float k = mod(cell.x + cell.y, 2.0);
+    outColor = vec4(mix(vec3(0.95), v_color, k), 1.0);
+  }
+}`;
+
+const { program, uniforms } = createProgram(gl, vs, fs);
+
+// One interleaved buffer: x, y, r, g, b per vertex.
+const data = new Float32Array([
+   0.0,  0.8,   0.93, 0.30, 0.25,
+  -0.8, -0.6,   0.25, 0.70, 0.35,
+   0.8, -0.6,   0.20, 0.45, 0.90,
+]);
+const vao = gl.createVertexArray();
+gl.bindVertexArray(vao);
+gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+const stride = 5 * Float32Array.BYTES_PER_ELEMENT;
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 2, gl.FLOAT, false, stride, 0);                                // position
+gl.enableVertexAttribArray(1);
+gl.vertexAttribPointer(1, 3, gl.FLOAT, false, stride, 2 * Float32Array.BYTES_PER_ELEMENT); // color
+
+const params = {};
+bindControls(document.body, params, () => requestAnimationFrame(draw));
+
+function draw() {
+  const aspect = resize(gl);
+  gl.clearColor(1, 1, 1, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(program);
+  gl.uniform1f(uniforms.u_angle, params.angle);
+  gl.uniform1f(uniforms.u_aspect, aspect);
+  gl.uniform1i(uniforms.u_mode, parseInt(params.mode));
+  gl.bindVertexArray(vao);
+  gl.drawArrays(params.wire ? gl.LINE_LOOP : gl.TRIANGLES, 0, 3);
+}
+window.addEventListener('resize', draw);
+draw();
+</script>
+</body>
+</html>

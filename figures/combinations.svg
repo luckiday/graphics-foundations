@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" width="720" height="230" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Affine and convex combinations">
+<title>Affine and convex combinations</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="720" height="230" fill="#ffffff"/>
+<line x1="21.0" y1="194.0" x2="426.0" y2="14.0" stroke="#e08a1e" stroke-width="2" stroke-dasharray="6 5"/>
+<line x1="120.0" y1="150.0" x2="300.0" y2="70.0" stroke="#2f6fdd" stroke-width="3.5"/>
+<circle cx="120.0" cy="150.0" r="5" stroke="#222222" fill="#222222" stroke-width="1"/>
+<circle cx="300.0" cy="70.0" r="5" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="116.0" y="172.0" fill="#222222" font-size="15" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">P</text>
+<text x="306.0" y="58.0" fill="#222222" font-size="15" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">Q</text>
+<text x="200.0" y="200.0" fill="#2f6fdd" font-size="13" text-anchor="middle">segment: convex (α, β ≥ 0)</text>
+<text x="200.0" y="218.0" fill="#e08a1e" font-size="13" text-anchor="middle">whole line: affine (α + β = 1)</text>
+<path d="M470.0,180.0 L680.0,170.0 L560.0,40.0 Z" stroke="#2f6fdd" stroke-width="2" fill="#e3ecfb"/>
+<circle cx="470.0" cy="180.0" r="3.5" stroke="#222222" fill="#222222" stroke-width="1"/>
+<circle cx="680.0" cy="170.0" r="3.5" stroke="#222222" fill="#222222" stroke-width="1"/>
+<circle cx="560.0" cy="40.0" r="3.5" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="575.0" y="212.0" fill="#2f6fdd" font-size="13" text-anchor="middle">convex combinations of 3 points: the filled triangle</text>
+<text x="575.0" y="22.0" fill="#e08a1e" font-size="13" text-anchor="middle">affine combinations: the whole plane</text>
+</svg>

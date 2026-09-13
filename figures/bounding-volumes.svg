@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 260" width="760" height="260" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Bounding volumes">
+<title>Bounding volumes</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="760" height="260" fill="#ffffff"/>
+<circle cx="120.0" cy="130.0" r="70.71067811865476" stroke="#2f6fdd" fill="#e3ecfb" stroke-width="2"/>
+<path d="M120.0,90.0 L190.0,120.0 L160.0,175.0 L90.0,160.0 L65.0,110.0 Z" stroke="#222222" stroke-width="1.6" fill="#9aa3ad"/>
+<rect x="325.0" y="90.0" width="125.0" height="85.0" rx="0" stroke="#2e9a4f" fill="#e2f3e7" stroke-width="2"/>
+<path d="M380.0,90.0 L450.0,120.0 L420.0,175.0 L350.0,160.0 L325.0,110.0 Z" stroke="#222222" stroke-width="1.6" fill="#9aa3ad"/>
+<path d="M597.9,74.7 L711.5,116.0 L685.4,187.5 L571.9,146.1 Z" stroke="#e08a1e" stroke-width="2" fill="#fcefdc"/>
+<path d="M640.0,90.0 L710.0,120.0 L680.0,175.0 L610.0,160.0 L585.0,110.0 Z" stroke="#222222" stroke-width="1.6" fill="#9aa3ad"/>
+<text x="120.0" y="225.0" fill="#2f6fdd" font-size="14" text-anchor="middle">bounding sphere</text>
+<text x="120.0" y="243.0" fill="#6b6b70" font-size="12" text-anchor="middle">cheapest test, loosest fit</text>
+<text x="380.0" y="225.0" fill="#2e9a4f" font-size="14" text-anchor="middle">axis-aligned box (AABB)</text>
+<text x="380.0" y="243.0" fill="#6b6b70" font-size="12" text-anchor="middle">3 interval overlaps</text>
+<text x="640.0" y="225.0" fill="#e08a1e" font-size="14" text-anchor="middle">oriented box (OBB)</text>
+<text x="640.0" y="243.0" fill="#6b6b70" font-size="12" text-anchor="middle">tighter; separating axis test</text>
+</svg>

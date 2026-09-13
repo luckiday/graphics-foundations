@@ -1,5 +1,0 @@
-# Transformation
-
-- Translation
-- Scale
-- Rotation

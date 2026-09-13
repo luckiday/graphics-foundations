@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 · Transformations and their order</title>
+<link rel="stylesheet" href="lib/style.css">
+<script type="importmap">{"imports": {"tiny-graphics/": "https://intro-graphics.github.io/TinyGraphics.js/v2/"}}</script>
+</head>
+<body>
+<header>
+  <h1>02 · Transformations and their order</h1>
+  <p>The same three matrices, multiplied in a different order, put the shape somewhere else. Faded copies show every
+    intermediate product. Companion to <a href="../notes/04-transformations.md">notes/04</a>.</p>
+</header>
+<div class="demo">
+  <div id="widget"></div>
+  <details><summary>Reading the picture</summary>
+    <p>The code builds <code>model = I · A · B · C</code> one factor at a time, exactly like
+      <code>model = model.times(X)</code>. Each faded F is drawn with one of the partial products. Read the product right
+      to left to follow the <em>object</em> through fixed world axes, or left to right to follow a <em>coordinate
+      frame</em> that each step moves. Red and green arrows are the local x and y axes.</p>
+  </details>
+</div>
+<script type="module">
+import {tiny} from 'tiny-graphics/common.js';
+import {Flat_Color_Shader, Point_List} from './lib/tg-helpers.js';
+
+const {color, Mat4, Material, Scene, Canvas_Widget} = tiny;
+
+// Axis-aligned bar from (x0, y0) to (x1, y1) as two triangles.
+const bar = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y0], [x1, y1], [x0, y1]];
+
+class Transformations_Demo extends Scene {
+    constructor() {
+        super();
+        this.widget_options = {aspect: 16 / 10, show_explanation: false, background: color(1, 1, 1, 1)};
+        // An "F" is asymmetric, so reflections and rotations are unambiguous.  Local origin: bottom of the stem.
+        this.shapes = {
+            F: new Point_List([...bar(0, 0, .3, 2), ...bar(.3, 1.7, 1.3, 2), ...bar(.3, .95, 1, 1.25)]),
+            x_axis: new Point_List([...bar(0, -.03, .9, .03), [.9, -.12], [1.1, 0], [.9, .12]]),
+            y_axis: new Point_List([...bar(-.03, 0, .03, .9), [-.12, .9], [.12, .9], [0, 1.1]]),
+            grid: new Point_List((() => {
+                const g = [];
+                for (let i = -10; i <= 10; i++) g.push([i, -10], [i, 10], [-10, i], [10, i]);
+                return g;
+            })()),
+            world_axes: new Point_List([[-10, 0], [10, 0], [0, -10], [0, 10]]),
+        };
+        this.flat = new Material(new Flat_Color_Shader(), {color: color(0, 0, 0, 1)});
+        this.orders = ["T R S", "T S R", "R T S", "R S T", "S T R", "S R T"];
+        Object.assign(this, {order: 0, show_steps: true, tx: 2, ty: 1, degrees: 90, sx: -1, sy: 1});
+    }
+
+    make_control_panel() {
+        this.key_triggered_button("Next multiplication order", ["o"], () => this.order = (this.order + 1) % this.orders.length);
+        this.key_triggered_button("Show / hide intermediate products", ["p"], () => this.show_steps = !this.show_steps);
+        this.new_line();
+        this.slider("T: x", {min: -4, max: 4, step: .1, value: this.tx}, v => this.tx = v);
+        this.slider("T: y", {min: -3, max: 3, step: .1, value: this.ty}, v => this.ty = v);
+        this.slider("R: degrees about z", {min: -180, max: 180, step: 1, value: this.degrees}, v => this.degrees = v);
+        this.slider("S: x", {min: -2, max: 2, step: .1, value: this.sx}, v => this.sx = v);
+        this.slider("S: y", {min: -2, max: 2, step: .1, value: this.sy}, v => this.sy = v);
+        this.new_line();
+        this.live_string(box => box.textContent = this.readout || "");
+    }
+
+    display(context, program_state) {
+        const h = 4.2, a = context.aspect_ratio;
+        program_state.set_camera(Mat4.identity());
+        program_state.projection_transform = Mat4.orthographic(-h * a, h * a, -h, h, -1, 1);
+        const gl = context.gl;
+        gl.disable(gl.DEPTH_TEST);                          // 2D: later draws simply go on top
+
+        const put = (shape, model, c, type) => shape.draw(context, program_state, model, this.flat.override({color: c}), type);
+        put(this.shapes.grid, Mat4.identity(), color(0, 0, 0, .1), "LINES");
+        put(this.shapes.world_axes, Mat4.identity(), color(0, 0, 0, .45), "LINES");
+
+        const M = {
+            T: Mat4.translation(this.tx, this.ty, 0),
+            R: Mat4.rotation(this.degrees * Math.PI / 180, 0, 0, 1),
+            S: Mat4.scale(this.sx, this.sy, 1),
+        };
+        const order = this.orders[this.order].split(" ");
+        let model = Mat4.identity();
+        const prefixes = [model];
+        for (const k of order) {
+            model = model.times(M[k]);                     // exactly the step-by-step pattern from the notes
+            prefixes.push(model);
+        }
+        const draw_frame = (m, alpha) => {
+            put(this.shapes.F, m, color(.12, .12, .14, alpha));
+            put(this.shapes.x_axis, m, color(.85, .25, .2, alpha));
+            put(this.shapes.y_axis, m, color(.2, .6, .3, alpha));
+        };
+        if (this.show_steps) prefixes.slice(0, -1).forEach((m, i) => draw_frame(m, .2 + .12 * i));
+        draw_frame(model, .95);
+        gl.enable(gl.DEPTH_TEST);
+
+        const fmt = v => (Math.abs(v) < 5e-4 ? 0 : v).toFixed(2).padStart(6);
+        this.readout = `model = I · ${order.join(" · ")}\n` + model.map(r => "[" + r.map(fmt).join(" ") + " ]").join("\n");
+    }
+}
+
+new Canvas_Widget(document.getElementById("widget"), [new Transformations_Demo()]);
+</script>
+</body>
+</html>

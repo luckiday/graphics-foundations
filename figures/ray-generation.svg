@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" width="680" height="320" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Generating a primary ray through a pixel">
+<title>Generating a primary ray through a pixel</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="680" height="320" fill="#ffffff"/>
+<circle cx="60.0" cy="210.0" r="5" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="60.0" y="234.0" fill="#222222" font-size="13" text-anchor="middle">eye</text>
+<path d="M250.0,50.0 L346.0,134.0 L346.0,294.0 L250.0,210.0 Z" stroke="#222222" stroke-width="1.6" fill="#fafaf7"/>
+<line x1="266.0" y1="64.0" x2="266.0" y2="224.0" stroke="#d8d8d2" stroke-width="1"/>
+<line x1="282.0" y1="78.0" x2="282.0" y2="238.0" stroke="#d8d8d2" stroke-width="1"/>
+<line x1="298.0" y1="92.0" x2="298.0" y2="252.0" stroke="#d8d8d2" stroke-width="1"/>
+<line x1="314.0" y1="106.0" x2="314.0" y2="266.0" stroke="#d8d8d2" stroke-width="1"/>
+<line x1="330.0" y1="120.0" x2="330.0" y2="280.0" stroke="#d8d8d2" stroke-width="1"/>
+<line x1="250.0" y1="82.0" x2="346.0" y2="166.0" stroke="#d8d8d2" stroke-width="1"/>
+<line x1="250.0" y1="114.0" x2="346.0" y2="198.0" stroke="#d8d8d2" stroke-width="1"/>
+<line x1="250.0" y1="146.0" x2="346.0" y2="230.0" stroke="#d8d8d2" stroke-width="1"/>
+<line x1="250.0" y1="178.0" x2="346.0" y2="262.0" stroke="#d8d8d2" stroke-width="1"/>
+<path d="M298.0,156.0 L314.0,170.0 L314.0,202.0 L298.0,188.0 Z" stroke="none" stroke-width="0" fill="#f6c9c2"/>
+<circle cx="578.2" cy="162.8" r="48" stroke="#222222" fill="#e3ecfb" stroke-width="1.6"/>
+<line x1="60.0" y1="210.0" x2="531.8" y2="150.5" stroke="#d9503f" stroke-width="1.8" marker-end="url(#md9503f)"/>
+<circle cx="306.0" cy="179.0" r="4" stroke="#d9503f" fill="#d9503f" stroke-width="1"/>
+<circle cx="531.8" cy="150.5" r="4" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="525.8" y="140.5" fill="#222222" font-size="12" text-anchor="end">first hit</text>
+<text x="330.0" y="305.0" fill="#6b6b70" font-size="12" text-anchor="middle">image plane: one cell per pixel; the ray passes through the pixel's center</text>
+<text x="470.0" y="40.0" fill="#d9503f" font-size="14" text-anchor="middle">ray(t) = eye + t · d,   t &gt; 0</text>
+<text x="470.0" y="60.0" fill="#d9503f" font-size="13" text-anchor="middle">d = normalize(pixel center − eye)</text>
+</svg>
