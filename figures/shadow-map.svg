@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" width="760" height="300" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Shadow mapping compares depths from the light">
+<title>Shadow mapping compares depths from the light</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="760" height="300" fill="#ffffff"/>
+<circle cx="120.0" cy="50.0" r="12" stroke="#e08a1e" fill="#fff4d6" stroke-width="2"/>
+<text x="120.0" y="30.0" fill="#e08a1e" font-size="13" text-anchor="middle">light</text>
+<line x1="40.0" y1="250.0" x2="720.0" y2="250.0" stroke="#222222" stroke-width="2"/>
+<rect x="240.0" y="170.0" width="90.0" height="80.0" rx="2" stroke="#222222" fill="#e3ecfb" stroke-width="1.6"/>
+<line x1="120.0" y1="50.0" x2="330.0" y2="170.0" stroke="#e08a1e" stroke-width="1.4"/>
+<line x1="330.0" y1="170.0" x2="480.0" y2="250.0" stroke="#e08a1e" stroke-width="1.4" stroke-dasharray="5 4"/>
+<line x1="120.0" y1="50.0" x2="620.0" y2="250.0" stroke="#e08a1e" stroke-width="1.4"/>
+<circle cx="330.0" cy="170.0" r="4.5" stroke="#2f6fdd" fill="#2f6fdd" stroke-width="1"/>
+<text x="338.0" y="162.0" fill="#2f6fdd" font-size="12" text-anchor="start">A: nearest to the light</text>
+<circle cx="480.0" cy="250.0" r="5" stroke="#d9503f" fill="#d9503f" stroke-width="1"/>
+<text x="480.0" y="272.0" fill="#d9503f" font-size="12" text-anchor="middle">P: farther than the stored depth → in shadow</text>
+<circle cx="620.0" cy="250.0" r="5" stroke="#2e9a4f" fill="#2e9a4f" stroke-width="1"/>
+<text x="630.0" y="238.0" fill="#2e9a4f" font-size="12" text-anchor="start">Q: equal → lit</text>
+<text x="560.0" y="60.0" fill="#222222" font-size="13" text-anchor="middle">pass 1: render depth from the light</text>
+<text x="560.0" y="80.0" fill="#222222" font-size="13" text-anchor="middle">into a texture (the shadow map)</text>
+<text x="560.0" y="110.0" fill="#222222" font-size="13" text-anchor="middle">pass 2: for each visible point,</text>
+<text x="560.0" y="130.0" fill="#222222" font-size="13" text-anchor="middle">compare its distance to the light</text>
+<text x="560.0" y="150.0" fill="#222222" font-size="13" text-anchor="middle">with the shadow map's value</text>
+</svg>

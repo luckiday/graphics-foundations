@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 300" width="820" height="300" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Orthographic and perspective view volumes">
+<title>Orthographic and perspective view volumes</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="820" height="300" fill="#ffffff"/>
+<line x1="20.0" y1="150.0" x2="350.0" y2="150.0" stroke="#d8d8d2" stroke-width="1"/>
+<circle cx="30.0" cy="150.0" r="4" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="30.0" y="175.0" fill="#222222" font-size="12" text-anchor="middle">eye</text>
+<text x="340.0" y="170.0" fill="#6b6b70" font-size="12" text-anchor="middle">−z</text>
+<path d="M110.0,80.0 L320.0,80.0 L320.0,220.0 L110.0,220.0 Z" stroke="#2f6fdd" stroke-width="2" fill="#e3ecfb"/>
+<text x="210.0" y="30.0" fill="#2f6fdd" font-size="15" text-anchor="middle" font-weight="600">orthographic: a box</text>
+<line x1="30.0" y1="245.0" x2="110.0" y2="245.0" stroke="#6b6b70" stroke-width="1" marker-end="url(#m6b6b70)" marker-start="url(#m6b6b70)"/>
+<text x="70.0" y="265.0" fill="#6b6b70" font-size="12" text-anchor="middle">near</text>
+<line x1="30.0" y1="280.0" x2="320.0" y2="280.0" stroke="#6b6b70" stroke-width="1" marker-end="url(#m6b6b70)" marker-start="url(#m6b6b70)"/>
+<text x="175.0" y="296.0" fill="#6b6b70" font-size="12" text-anchor="middle">far</text>
+<text x="216.0" y="72.0" fill="#6b6b70" font-size="12" text-anchor="middle">top</text>
+<line x1="440.0" y1="150.0" x2="770.0" y2="150.0" stroke="#d8d8d2" stroke-width="1"/>
+<circle cx="450.0" cy="150.0" r="4" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="450.0" y="175.0" fill="#222222" font-size="12" text-anchor="middle">eye</text>
+<text x="760.0" y="170.0" fill="#6b6b70" font-size="12" text-anchor="middle">−z</text>
+<line x1="450.0" y1="150.0" x2="740.0" y2="20.9" stroke="#6b6b70" stroke-width="1" stroke-dasharray="4 4"/>
+<line x1="450.0" y1="150.0" x2="740.0" y2="279.1" stroke="#6b6b70" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M530.0,114.4 L740.0,20.9 L740.0,279.1 L530.0,185.6 Z" stroke="#d9503f" stroke-width="2" fill="#fbe7e3"/>
+<text x="630.0" y="30.0" fill="#d9503f" font-size="15" text-anchor="middle" font-weight="600">perspective: a frustum</text>
+<path d="M500,127.7385657345732 A50,50 0 0,1 500,172.2614342654268" stroke="#d9503f" stroke-width="1.2" fill="none"/>
+<text x="516.0" y="155.0" fill="#d9503f" font-size="13" text-anchor="start" font-style="italic" font-family="Georgia, 'Times New Roman', serif">fovy</text>
+<text x="410.0" y="60.0" fill="#6b6b70" font-size="13" text-anchor="middle">both map to the cube [−1, 1]³ (NDC)</text>
+</svg>

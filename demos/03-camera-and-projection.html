@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>03 · Camera and projection</title>
+<link rel="stylesheet" href="lib/style.css">
+<script type="importmap">{"imports": {"tiny-graphics/": "https://intro-graphics.github.io/TinyGraphics.js/v2/"}}</script>
+</head>
+<body>
+<header>
+  <h1>03 · Camera and projection</h1>
+  <p>Left: an outside observer looking at the scene and the camera's view volume (drag to orbit, scroll to zoom).
+    Right: what that camera sees. Companion to <a href="../notes/06-viewing-and-projection.md">notes/06</a>.</p>
+</header>
+<div class="demo">
+  <div id="widget"></div>
+  <details><summary>What to try</summary>
+    <p>Shrink the field of view and watch the frustum narrow while the right image zooms in. Move the near plane until it
+      cuts through a box. Switch to orthographic and notice that distant boxes stop shrinking. The red, green and blue
+      arrows at the camera are its u, v and n axes: the rows of the view matrix shown in the panel.</p>
+  </details>
+</div>
+<script type="module">
+import {tiny, defs} from 'tiny-graphics/common.js';
+import {orbit_controls} from './lib/tg-helpers.js';
+
+const {vec3, vec4, color, Mat4, Light, Material, Shape, Scene, Canvas_Widget} = tiny;
+
+// Line segments whose endpoints are rewritten every frame: position and per-vertex color, drawn with Basic_Shader.
+class Segments extends Shape {
+    constructor(count) {
+        super("position", "color");
+        this.arrays.position = Array.from({length: count}, () => vec3(0, 0, 0));
+        this.arrays.color = Array.from({length: count}, () => vec4(0, 0, 0, 1));
+    }
+}
+
+class Camera_Demo extends Scene {
+    constructor() {
+        super();
+        this.widget_options = {aspect: 2, show_explanation: false, background: color(1, 1, 1, 1)};
+        this.shapes = {box: new defs.Cube(), lines: new Segments(24 + 6)};
+        this.phong = new Material(new defs.Phong_Shader(), {ambient: .35, diffusivity: .65, specularity: .1});
+        this.basic = new Material(new defs.Basic_Shader());
+        const palette = ["#d9543f", "#3d8bd9", "#4dad66", "#eeb340", "#8c66bf"].map(h => tiny.hex_color(h));
+        this.boxes = [];
+        for (let i = 0; i < 5; i++)
+            for (let j = 0; j < 5; j++)
+                this.boxes.push({
+                    model: Mat4.translation((i - 2) * 2.2, 0, (j - 2) * 2.2).times(Mat4.scale(.5, .5 + .25 * ((i + j) % 3), .5)),
+                    color: palette[(i * 3 + j) % 5]
+                });
+        this.floor = Mat4.translation(0, -.55, 0).times(Mat4.scale(6, .05, 6));
+        Object.assign(this, {azimuth: 35, height: 3, distance: 9, at_y: .5, roll: 0, perspective: true, fov: 50, near: 2, far: 14});
+    }
+
+    make_control_panel() {
+        this.control_panel.innerHTML += "look_at(eye, at, up)<br>";
+        this.slider("eye azimuth (°)", {min: -180, max: 180, step: 1, value: this.azimuth}, v => this.azimuth = v);
+        this.slider("eye height", {min: -4, max: 8, step: .1, value: this.height}, v => this.height = v);
+        this.slider("eye distance", {min: 3, max: 16, step: .1, value: this.distance}, v => this.distance = v);
+        this.slider("at.y", {min: -2, max: 3, step: .1, value: this.at_y}, v => this.at_y = v);
+        this.slider("roll the up vector (°)", {min: -180, max: 180, step: 1, value: this.roll}, v => this.roll = v);
+        this.new_line();
+        this.key_triggered_button("Perspective ⇄ orthographic", ["o"], () => this.perspective = !this.perspective);
+        this.slider("fovy (°), or ortho half-height × 10", {min: 10, max: 120, step: 1, value: this.fov}, v => this.fov = v);
+        this.slider("near", {min: .1, max: 8, step: .1, value: this.near}, v => this.near = v);
+        this.slider("far", {min: 3, max: 25, step: .1, value: this.far}, v => this.far = v);
+        this.new_line();
+        this.live_string(box => box.textContent = this.readout || "");
+    }
+
+    camera(aspect) {
+        const az = this.azimuth * Math.PI / 180;
+        const eye = vec3(this.distance * Math.sin(az), this.height, this.distance * Math.cos(az)), at = vec3(0, this.at_y, 0);
+        const level = Mat4.look_at(eye, at, vec3(0, 1, 0));
+        const r = this.roll * Math.PI / 180;                  // roll: rotate the up hint about the view direction
+        const up = vec3(...level[1].slice(0, 3)).times(Math.cos(r)).plus(vec3(...level[0].slice(0, 3)).times(Math.sin(r)));
+        const view = Mat4.look_at(eye, at, up);
+        const n = this.near, f = Math.max(this.far, n + .1);
+        let projection, half_near, half_far;
+        if (this.perspective) {
+            const t = Math.tan(this.fov * Math.PI / 360);
+            projection = Mat4.perspective(this.fov * Math.PI / 180, aspect, n, f);
+            [half_near, half_far] = [[n * t * aspect, n * t], [f * t * aspect, f * t]];
+        } else {
+            const h = this.fov / 10;
+            projection = Mat4.orthographic(-h * aspect, h * aspect, -h, h, n, f);
+            half_near = half_far = [h * aspect, h];
+        }
+        return {eye, view, projection, n, f, half_near, half_far};
+    }
+
+    draw_scene(context, program_state) {
+        program_state.lights = [new Light(vec4(.4, 1, .6, 0), color(1, 1, 1, 1), 1e6)];
+        for (const b of this.boxes) this.shapes.box.draw(context, program_state, b.model, this.phong.override({color: b.color}));
+        this.shapes.box.draw(context, program_state, this.floor, this.phong.override({color: color(.9, .9, .88, 1)}));
+    }
+
+    display(context, program_state) {
+        const gl = context.gl, W = context.width, H = context.height, half = Math.floor(W / 2);
+        if (!this.eye_of_observer) this.eye_of_observer = orbit_controls(context.canvas, {radius: 26, yaw: -.9, pitch: .55});
+        const aspect = half / H;
+        const cam = this.camera(aspect);
+        gl.enable(gl.SCISSOR_TEST);
+
+        // Right half: through the camera.
+        gl.viewport(half, 0, W - half, H);
+        gl.scissor(half, 0, W - half, H);
+        program_state.set_camera(cam.view);
+        program_state.projection_transform = cam.projection;
+        this.draw_scene(context, program_state);
+
+        // Left half: the observer.
+        gl.viewport(0, 0, half, H);
+        gl.scissor(0, 0, half, H);
+        gl.clearColor(.965, .965, .955, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        program_state.set_camera(Mat4.look_at(this.eye_of_observer(), vec3(0, 0, 0), vec3(0, 1, 0)));
+        program_state.projection_transform = Mat4.perspective(Math.PI / 4, aspect, .5, 200);
+        this.draw_scene(context, program_state);
+
+        // The camera's view volume: its 8 corners in camera space, taken to world space by the camera's frame.
+        const [u, v, nn] = [0, 1, 2].map(k => vec3(...cam.view[k].slice(0, 3)));
+        const to_world = (x, y, z) => cam.eye.plus(u.times(x)).plus(v.times(y)).plus(nn.times(z));
+        const c = [];
+        for (const [d, [hx, hy]] of [[-cam.n, cam.half_near], [-cam.f, cam.half_far]])
+            c.push(to_world(-hx, -hy, d), to_world(hx, -hy, d), to_world(hx, hy, d), to_world(-hx, hy, d));
+        const segments = [];
+        for (let i = 0; i < 4; i++) segments.push([c[i], c[(i + 1) % 4]], [c[4 + i], c[4 + (i + 1) % 4]], [c[i], c[4 + i]]);
+        const ink = color(.1, .1, .12, 1);
+        const lines = this.shapes.lines;
+        segments.forEach(([a, b], k) => {
+            lines.arrays.position[2 * k] = a;
+            lines.arrays.position[2 * k + 1] = b;
+            lines.arrays.color[2 * k] = lines.arrays.color[2 * k + 1] = ink;
+        });
+        [[1.2, 0, 0], [0, 1.2, 0], [0, 0, 1.2]].forEach((axis, k) => {
+            const col = [color(.85, .2, .2, 1), color(.2, .6, .25, 1), color(.2, .35, .9, 1)][k];
+            lines.arrays.position[24 + 2 * k] = cam.eye;
+            lines.arrays.position[25 + 2 * k] = to_world(...axis);
+            lines.arrays.color[24 + 2 * k] = lines.arrays.color[25 + 2 * k] = col;
+        });
+        if (this.lines_uploaded) lines.copy_onto_graphics_card(gl, ["position", "color"], false);
+        lines.draw(context, program_state, Mat4.identity(), this.basic, "LINES");
+        this.lines_uploaded = true;
+
+        gl.disable(gl.SCISSOR_TEST);
+        const fmt = x => (Math.abs(x) < 5e-4 ? 0 : x).toFixed(2).padStart(6);
+        const show = m => m.map(r => "[" + r.map(fmt).join(" ") + " ]").join("\n");
+        this.readout = `view (rows u, v, n)\n${show(cam.view)}\n\n${this.perspective ? "perspective" : "orthographic"} projection\n${show(cam.projection)}`;
+    }
+}
+
+new Canvas_Widget(document.getElementById("widget"), [new Camera_Demo()]);
+</script>
+</body>
+</html>

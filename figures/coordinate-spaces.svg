@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 170" width="940" height="170" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Coordinate spaces from object to screen">
+<title>Coordinate spaces from object to screen</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="940" height="170" fill="#ffffff"/>
+<rect x="10.0" y="50.0" width="140.0" height="56.0" rx="6" stroke="#222222" fill="#f3f3f0" stroke-width="1.5"/>
+<text x="80.0" y="75.0" fill="#222222" font-size="14" text-anchor="middle">object space</text>
+<text x="80.0" y="92.0" fill="#6b6b70" font-size="12" text-anchor="middle">shape's own</text>
+<rect x="200.0" y="50.0" width="140.0" height="56.0" rx="6" stroke="#222222" fill="#f3f3f0" stroke-width="1.5"/>
+<text x="270.0" y="75.0" fill="#222222" font-size="14" text-anchor="middle">world space</text>
+<text x="270.0" y="92.0" fill="#6b6b70" font-size="12" text-anchor="middle">the scene</text>
+<rect x="390.0" y="50.0" width="140.0" height="56.0" rx="6" stroke="#222222" fill="#f3f3f0" stroke-width="1.5"/>
+<text x="460.0" y="75.0" fill="#222222" font-size="14" text-anchor="middle">camera space</text>
+<text x="460.0" y="92.0" fill="#6b6b70" font-size="12" text-anchor="middle">eye at origin, looks −z</text>
+<rect x="580.0" y="50.0" width="140.0" height="56.0" rx="6" stroke="#222222" fill="#f3f3f0" stroke-width="1.5"/>
+<text x="650.0" y="75.0" fill="#222222" font-size="14" text-anchor="middle">clip space</text>
+<text x="650.0" y="92.0" fill="#6b6b70" font-size="12" text-anchor="middle">homogeneous</text>
+<rect x="790.0" y="50.0" width="140.0" height="56.0" rx="6" stroke="#222222" fill="#f3f3f0" stroke-width="1.5"/>
+<text x="860.0" y="75.0" fill="#222222" font-size="14" text-anchor="middle">NDC → pixels</text>
+<text x="860.0" y="92.0" fill="#6b6b70" font-size="12" text-anchor="middle">÷ w, viewport</text>
+<line x1="150.0" y1="78.0" x2="196.0" y2="78.0" stroke="#2f6fdd" stroke-width="1.8" marker-end="url(#m2f6fdd)"/>
+<text x="175.0" y="40.0" fill="#2f6fdd" font-size="13" text-anchor="middle">M  model</text>
+<line x1="340.0" y1="78.0" x2="386.0" y2="78.0" stroke="#2f6fdd" stroke-width="1.8" marker-end="url(#m2f6fdd)"/>
+<text x="365.0" y="40.0" fill="#2f6fdd" font-size="13" text-anchor="middle">V  view</text>
+<line x1="530.0" y1="78.0" x2="576.0" y2="78.0" stroke="#2f6fdd" stroke-width="1.8" marker-end="url(#m2f6fdd)"/>
+<text x="555.0" y="40.0" fill="#2f6fdd" font-size="13" text-anchor="middle">P  projection</text>
+<line x1="720.0" y1="78.0" x2="786.0" y2="78.0" stroke="#2f6fdd" stroke-width="1.8" marker-end="url(#m2f6fdd)"/>
+<text x="755.0" y="40.0" fill="#2f6fdd" font-size="13" text-anchor="middle">GPU</text>
+<text x="470.0" y="150.0" fill="#222222" font-size="16" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">gl_Position = P · V · M · p</text>
+</svg>

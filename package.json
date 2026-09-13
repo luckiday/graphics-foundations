@@ -1,0 +1,13 @@
+{
+  "name": "graphics-foundations",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "node tools/serve.mjs",
+    "figures": "python3 tools/figures.py",
+    "check": "node tools/check-math.mjs && node tools/check-links.mjs && node tools/check-demos.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.60.0"
+  }
+}

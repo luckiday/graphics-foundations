@@ -1,0 +1,42 @@
+:root {
+  --bg: #f7f7f5; --fg: #1d1d1f; --muted: #6b6b70; --line: #deded8; --accent: #2f6fdd;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header { padding: 16px 20px 8px; max-width: 1100px; margin: 0 auto; }
+header h1 { font-size: 18px; margin: 0 0 2px; }
+header p { margin: 0; color: var(--muted); }
+header a { color: var(--accent); }
+main {
+  display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px;
+  padding: 8px 20px 20px; max-width: 1100px; margin: 0 auto;
+}
+@media (max-width: 760px) { main { grid-template-columns: 1fr; } }
+canvas {
+  width: 100%; aspect-ratio: 16 / 10; display: block;
+  background: #fff; border: 1px solid var(--line); border-radius: 6px; touch-action: none;
+}
+aside { display: flex; flex-direction: column; gap: 10px; }
+fieldset { border: 1px solid var(--line); border-radius: 6px; margin: 0; padding: 8px 12px 10px; }
+legend { color: var(--muted); font-size: 12px; padding: 0 4px; }
+label { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; font-size: 13px; }
+label input[type=range] { grid-column: 1 / -1; width: 100%; }
+label output { font-variant-numeric: tabular-nums; color: var(--muted); }
+label.check { grid-template-columns: auto 1fr; }
+select { width: 100%; }
+pre.matrix {
+  margin: 0; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 8px; overflow-x: auto;
+}
+.note { color: var(--muted); font-size: 12.5px; margin: 0; }
+
+/* Demos built on TinyGraphics.js: the page is a header plus the library's canvas widget. */
+.demo { max-width: 1080px; margin: 0 auto; padding: 0 20px 32px; }
+.demo .tg-widget { --tg-max-width: 1080px; }
+.demo .tg-panel .live_string { white-space: pre; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.demo details { margin-top: 12px; color: var(--muted); }
+.demo details summary { cursor: pointer; }

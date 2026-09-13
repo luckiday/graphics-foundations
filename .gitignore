@@ -1,12 +1,3 @@
-.idea/
-.ipynb_checkpoints/
-week_0/.idea/
-week_0/.ipynb_checkpoints/
-week_1/.ipynb_checkpoints/
-week_2/.ipynb_checkpoints/
-week_2/a2-luckiday/
-week_2/CS174A_Fall2019_Discussion2/
-week_4/a3-luckiday/
-week_7/assignment4/
-week_7/a4-luckiday/
-/week_10/Discussion.md
+node_modules/
+tools/shots/
+.DS_Store

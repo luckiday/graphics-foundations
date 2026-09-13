@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive demos · Computer Graphics Notes</title>
+<link rel="stylesheet" href="lib/style.css">
+<style>
+  .list { max-width: 760px; margin: 0 auto; padding: 0 20px 40px; }
+  .list a { display: block; padding: 12px 14px; margin: 8px 0; background: #fff; border: 1px solid var(--line);
+    border-radius: 6px; color: inherit; text-decoration: none; }
+  .list a:hover { border-color: var(--accent); }
+  .list b { display: block; }
+  .list span { color: var(--muted); }
+</style>
+</head>
+<body>
+<header style="max-width:760px">
+  <h1>Interactive demos</h1>
+  <p>Each demo is one HTML file: demo 01 is plain WebGL 2, and demos 02–07 are built on
+    <a href="https://github.com/intro-graphics/TinyGraphics.js">TinyGraphics.js</a>. View the page source and read them.</p>
+</header>
+<div class="list">
+  <a href="01-hello-triangle.html"><b>01 · Hello, triangle</b><span>Buffers, shaders, and what the rasterizer interpolates.</span></a>
+  <a href="02-transformations.html"><b>02 · Transformations and their order</b><span>T, R, S in all six orders, with every intermediate frame drawn.</span></a>
+  <a href="03-camera-and-projection.html"><b>03 · Camera and projection</b><span>look_at, perspective and orthographic view volumes, seen from outside.</span></a>
+  <a href="04-lighting-and-shading.html"><b>04 · Lighting and shading</b><span>The Phong reflection model evaluated per face, per vertex, and per fragment.</span></a>
+  <a href="05-texture-mapping.html"><b>05 · Texture mapping</b><span>Filtering, mipmaps, wrap modes, and perspective-correct interpolation.</span></a>
+  <a href="06-ray-tracing.html"><b>06 · Ray tracing</b><span>Primary, shadow, and reflection rays in a fragment shader.</span></a>
+  <a href="07-bounding-volumes.html"><b>07 · Collision detection with bounding volumes</b><span>Broad phase with circles or AABBs, narrow phase with the separating axis theorem.</span></a>
+</div>
+</body>
+</html>

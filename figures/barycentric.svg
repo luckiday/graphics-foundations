@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 330" width="460" height="330" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Barycentric coordinates of a point in a triangle">
+<title>Barycentric coordinates of a point in a triangle</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="460" height="330" fill="#ffffff"/>
+<path d="M60.0,280.0 L400.0,250.0 L200.0,40.0 Z" stroke="#222222" stroke-width="1.8" fill="#e3ecfb"/>
+<line x1="232.0" y1="151.0" x2="60.0" y2="280.0" stroke="#d9503f" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="232.0" y1="151.0" x2="400.0" y2="250.0" stroke="#2e9a4f" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="232.0" y1="151.0" x2="200.0" y2="40.0" stroke="#2f6fdd" stroke-width="1.2" stroke-dasharray="4 4"/>
+<circle cx="232.0" cy="151.0" r="4.5" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="246.0" y="155.0" fill="#222222" font-size="16" text-anchor="start" font-style="italic" font-family="Georgia, 'Times New Roman', serif">X</text>
+<circle cx="60.0" cy="280.0" r="5" stroke="#d9503f" fill="#d9503f" stroke-width="1"/>
+<text x="44.0" y="286.0" fill="#d9503f" font-size="17" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">P</text>
+<circle cx="400.0" cy="250.0" r="5" stroke="#2e9a4f" fill="#2e9a4f" stroke-width="1"/>
+<text x="416.0" y="256.0" fill="#2e9a4f" font-size="17" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">Q</text>
+<circle cx="200.0" cy="40.0" r="5" stroke="#2f6fdd" fill="#2f6fdd" stroke-width="1"/>
+<text x="200.0" y="28.0" fill="#2f6fdd" font-size="17" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">R</text>
+<text x="230.0" y="316.0" fill="#222222" font-size="15" text-anchor="middle" font-style="italic" font-family="Georgia, 'Times New Roman', serif">X = αP + βQ + γR,   α + β + γ = 1</text>
+<text x="355.0" y="60.0" fill="#6b6b70" font-size="13" text-anchor="middle">inside ⇔ α, β, γ ≥ 0</text>
+<text x="355.0" y="80.0" fill="#6b6b70" font-size="13" text-anchor="middle">here: α = .2, β = .3, γ = .5</text>
+</svg>

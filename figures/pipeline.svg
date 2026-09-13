@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" width="900" height="200" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="The WebGL rendering pipeline">
+<title>The WebGL rendering pipeline</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="900" height="200" fill="#ffffff"/>
+<rect x="10.0" y="60.0" width="150.0" height="58.0" rx="6" stroke="#222222" fill="#f3f3f0" stroke-width="1.5"/>
+<text x="85.0" y="86.0" fill="#222222" font-size="14" text-anchor="middle">vertex data</text>
+<text x="85.0" y="103.0" fill="#6b6b70" font-size="12" text-anchor="middle">buffers</text>
+<rect x="185.0" y="60.0" width="150.0" height="58.0" rx="6" stroke="#2f6fdd" fill="#e3ecfb" stroke-width="1.5"/>
+<text x="260.0" y="86.0" fill="#222222" font-size="14" text-anchor="middle">vertex shader</text>
+<text x="260.0" y="103.0" fill="#2f6fdd" font-size="12" text-anchor="middle">once per vertex</text>
+<rect x="365.0" y="60.0" width="150.0" height="58.0" rx="6" stroke="#222222" fill="#f3f3f0" stroke-width="1.5"/>
+<text x="440.0" y="86.0" fill="#222222" font-size="14" text-anchor="middle">primitive assembly</text>
+<text x="440.0" y="103.0" fill="#6b6b70" font-size="12" text-anchor="middle">+ clipping</text>
+<rect x="545.0" y="60.0" width="150.0" height="58.0" rx="6" stroke="#222222" fill="#f3f3f0" stroke-width="1.5"/>
+<text x="620.0" y="86.0" fill="#222222" font-size="14" text-anchor="middle">rasterizer</text>
+<text x="620.0" y="103.0" fill="#6b6b70" font-size="12" text-anchor="middle">interpolates</text>
+<rect x="720.0" y="60.0" width="150.0" height="58.0" rx="6" stroke="#d9503f" fill="#fbe7e3" stroke-width="1.5"/>
+<text x="795.0" y="86.0" fill="#222222" font-size="14" text-anchor="middle">fragment shader</text>
+<text x="795.0" y="103.0" fill="#d9503f" font-size="12" text-anchor="middle">once per pixel</text>
+<line x1="160.0" y1="89.0" x2="181.0" y2="89.0" stroke="#222222" stroke-width="1.6" marker-end="url(#m222222)"/>
+<line x1="335.0" y1="89.0" x2="361.0" y2="89.0" stroke="#222222" stroke-width="1.6" marker-end="url(#m222222)"/>
+<line x1="515.0" y1="89.0" x2="541.0" y2="89.0" stroke="#222222" stroke-width="1.6" marker-end="url(#m222222)"/>
+<line x1="695.0" y1="89.0" x2="716.0" y2="89.0" stroke="#222222" stroke-width="1.6" marker-end="url(#m222222)"/>
+<line x1="870.0" y1="89.0" x2="894.0" y2="89.0" stroke="#222222" stroke-width="1.6" marker-end="url(#m222222)"/>
+<text x="882.0" y="140.0" fill="#6b6b70" font-size="12" text-anchor="middle">image</text>
+<text x="260.0" y="42.0" fill="#2f6fdd" font-size="12" text-anchor="middle">programmable</text>
+<text x="795.0" y="42.0" fill="#d9503f" font-size="12" text-anchor="middle">programmable</text>
+<text x="530.0" y="42.0" fill="#6b6b70" font-size="12" text-anchor="middle">fixed stages</text>
+<text x="260.0" y="146.0" fill="#6b6b70" font-size="12" text-anchor="middle">writes gl_Position</text>
+<text x="260.0" y="162.0" fill="#6b6b70" font-size="12" text-anchor="middle">(clip coordinates)</text>
+<text x="620.0" y="146.0" fill="#6b6b70" font-size="12" text-anchor="middle">divides by w, maps to pixels,</text>
+<text x="620.0" y="162.0" fill="#6b6b70" font-size="12" text-anchor="middle">finds covered pixels</text>
+<text x="795.0" y="146.0" fill="#6b6b70" font-size="12" text-anchor="middle">writes a color;</text>
+<text x="795.0" y="162.0" fill="#6b6b70" font-size="12" text-anchor="middle">then depth test, blending</text>
+</svg>

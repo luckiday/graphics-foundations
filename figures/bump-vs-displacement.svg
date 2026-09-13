@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 240" width="780" height="240" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Bump, displacement and parallax mapping">
+<title>Bump, displacement and parallax mapping</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="780" height="240" fill="#ffffff"/>
+<path d="M20.0,150.0 L24.0,150.0 L28.0,150.0 L32.0,150.0 L36.0,150.0 L40.0,150.0 L44.0,150.0 L48.0,150.0 L52.0,150.0 L56.0,150.0 L60.0,150.0 L64.0,150.0 L68.0,150.0 L72.0,150.0 L76.0,150.0 L80.0,150.0 L84.0,150.0 L88.0,150.0 L92.0,150.0 L96.0,150.0 L100.0,150.0 L104.0,150.0 L108.0,150.0 L112.0,150.0 L116.0,150.0 L120.0,150.0 L124.0,150.0 L128.0,150.0 L132.0,150.0 L136.0,150.0 L140.0,150.0 L144.0,150.0 L148.0,150.0 L152.0,150.0 L156.0,150.0 L160.0,150.0 L164.0,150.0 L168.0,150.0 L172.0,150.0 L176.0,150.0 L180.0,150.0 L184.0,150.0 L188.0,150.0 L192.0,150.0 L196.0,150.0 L200.0,150.0 L204.0,150.0 L208.0,150.0 L212.0,150.0 L216.0,150.0 L220.0,150.0 L224.0,150.0 L228.0,150.0 L232.0,150.0 L236.0,150.0 L240.0,150.0 L244.0,150.0 L248.0,150.0 L252.0,150.0 L256.0,150.0 L260.0,150.0" stroke="#222222" stroke-width="2.2" fill="none"/>
+<line x1="28.0" y1="150.0" x2="46.2" y2="121.3" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="52.0" y1="150.0" x2="33.8" y2="121.3" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="76.0" y1="150.0" x2="68.0" y2="117.0" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="100.0" y1="150.0" x2="121.0" y2="123.3" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="124.0" y1="150.0" x2="116.0" y2="117.0" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="148.0" y1="150.0" x2="129.8" y2="121.3" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="172.0" y1="150.0" x2="190.2" y2="121.3" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="196.0" y1="150.0" x2="204.0" y2="117.0" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="220.0" y1="150.0" x2="199.0" y2="123.3" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="244.0" y1="150.0" x2="252.0" y2="117.0" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<text x="140.0" y="205.0" fill="#2f6fdd" font-size="14" text-anchor="middle">bump / normal map</text>
+<text x="140.0" y="223.0" fill="#6b6b70" font-size="12" text-anchor="middle">flat geometry, perturbed normals</text>
+<path d="M280.0,150.0 L284.0,146.9 L288.0,144.1 L292.0,141.9 L296.0,140.5 L300.0,140.0 L304.0,140.5 L308.0,141.9 L312.0,144.1 L316.0,146.9 L320.0,150.0 L324.0,153.1 L328.0,155.9 L332.0,158.1 L336.0,159.5 L340.0,160.0 L344.0,159.5 L348.0,158.1 L352.0,155.9 L356.0,153.1 L360.0,150.0 L364.0,146.9 L368.0,144.1 L372.0,141.9 L376.0,140.5 L380.0,140.0 L384.0,140.5 L388.0,141.9 L392.0,144.1 L396.0,146.9 L400.0,150.0 L404.0,153.1 L408.0,155.9 L412.0,158.1 L416.0,159.5 L420.0,160.0 L424.0,159.5 L428.0,158.1 L432.0,155.9 L436.0,153.1 L440.0,150.0 L444.0,146.9 L448.0,144.1 L452.0,141.9 L456.0,140.5 L460.0,140.0 L464.0,140.5 L468.0,141.9 L472.0,144.1 L476.0,146.9 L480.0,150.0 L484.0,153.1 L488.0,155.9 L492.0,158.1 L496.0,159.5 L500.0,160.0 L504.0,159.5 L508.0,158.1 L512.0,155.9 L516.0,153.1 L520.0,150.0" stroke="#222222" stroke-width="2.2" fill="none"/>
+<line x1="288.0" y1="144.1" x2="306.2" y2="115.4" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="312.0" y1="144.1" x2="293.8" y2="115.4" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="336.0" y1="159.5" x2="328.0" y2="126.5" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="360.0" y1="150.0" x2="381.0" y2="123.3" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="384.0" y1="140.5" x2="376.0" y2="107.4" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="408.0" y1="155.9" x2="389.8" y2="127.2" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="432.0" y1="155.9" x2="450.2" y2="127.2" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="456.0" y1="140.5" x2="464.0" y2="107.4" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="480.0" y1="150.0" x2="459.0" y2="123.3" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<line x1="504.0" y1="159.5" x2="512.0" y2="126.5" stroke="#2f6fdd" stroke-width="1.6" marker-end="url(#m2f6fdd)"/>
+<text x="400.0" y="205.0" fill="#222222" font-size="14" text-anchor="middle">displacement map</text>
+<text x="400.0" y="223.0" fill="#6b6b70" font-size="12" text-anchor="middle">vertices actually moved</text>
+<path d="M560,150 L760,150" stroke="#222222" stroke-width="2.2" fill="none"/>
+<line x1="580.0" y1="150.0" x2="740.0" y2="110.0" stroke="#6b6b70" stroke-width="1.2" stroke-dasharray="4 4"/>
+<circle cx="740.0" cy="110.0" r="4" stroke="#222222" fill="#222222" stroke-width="1"/>
+<text x="746.0" y="106.0" fill="#6b6b70" font-size="12" text-anchor="start">eye</text>
+<line x1="670.0" y1="150.0" x2="670.0" y2="132.0" stroke="#e08a1e" stroke-width="1.5"/>
+<line x1="670.0" y1="132.0" x2="640.0" y2="144.0" stroke="#e08a1e" stroke-width="1.5" marker-end="url(#me08a1e)"/>
+<text x="660.0" y="205.0" fill="#e08a1e" font-size="14" text-anchor="middle">parallax map</text>
+<text x="660.0" y="223.0" fill="#6b6b70" font-size="12" text-anchor="middle">shift the texture lookup by height</text>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 280" width="560" height="280" font-family="Helvetica, Arial, sans-serif" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Separating axis test">
+<title>Separating axis test</title><defs><marker id="m222222" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="m6b6b70" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b70"/></marker><marker id="m2f6fdd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f6fdd"/></marker><marker id="md9503f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9503f"/></marker><marker id="m2e9a4f" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9a4f"/></marker><marker id="me08a1e" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e08a1e"/></marker><marker id="m8a4fc7" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a4fc7"/></marker></defs>
+<rect width="560" height="280" fill="#ffffff"/>
+<path d="M80.0,80.0 L200.0,60.0 L220.0,150.0 L100.0,170.0 Z" stroke="#2f6fdd" stroke-width="2" fill="#e3ecfb"/>
+<path d="M300.0,140.0 L420.0,110.0 L450.0,200.0 L320.0,230.0 Z" stroke="#d9503f" stroke-width="2" fill="#fbe7e3"/>
+<line x1="40.0" y1="260.0" x2="520.0" y2="20.0" stroke="#6b6b70" stroke-width="1.2"/>
+<text x="470.0" y="30.0" fill="#6b6b70" font-size="12" text-anchor="middle">candidate axis</text>
+<line x1="128.5" y1="226.9" x2="252.5" y2="164.9" stroke="#2f6fdd" stroke-width="5"/>
+<line x1="271.5" y1="133.1" x2="399.5" y2="69.1" stroke="#d9503f" stroke-width="5"/>
+<text x="140.0" y="250.0" fill="#222222" font-size="13" text-anchor="middle">projections do not overlap on this axis</text>
+<text x="140.0" y="268.0" fill="#222222" font-size="13" text-anchor="middle">⇒ the convex shapes are separated</text>
+</svg>

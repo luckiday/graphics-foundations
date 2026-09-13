@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07 · Collision detection with bounding volumes</title>
+<link rel="stylesheet" href="lib/style.css">
+<script type="importmap">{"imports": {"tiny-graphics/": "https://intro-graphics.github.io/TinyGraphics.js/v2/"}}</script>
+</head>
+<body>
+<header>
+  <h1>07 · Collision detection with bounding volumes</h1>
+  <p>Cheap bounding-volume tests reject most pairs; only the survivors get the exact, more expensive polygon test.
+    Shown in 2D, because the idea is the same in 3D. Companion to <a href="../notes/09-collision-detection.md">notes/09</a>.</p>
+</header>
+<div class="demo">
+  <div id="widget"></div>
+  <details><summary>Reading the picture</summary>
+    <p>Grey outlines are bounding volumes. <b style="color:#e59a2f">Orange</b>: the bounding volumes overlap but the
+      shapes do not, a false positive the exact test must clean up. <b style="color:#d63c32">Red</b>: a real collision,
+      found with the separating axis theorem. Each body's polygon is stored once in local coordinates and placed with a
+      model matrix, and the collision test uses exactly the same matrix.</p>
+  </details>
+</div>
+<script type="module">
+import {tiny} from 'tiny-graphics/common.js';
+import {Flat_Color_Shader, Point_List} from './lib/tg-helpers.js';
+
+const {vec3, color, Mat4, Material, Scene, Canvas_Widget} = tiny;
+
+const MAX_BODIES = 80;
+const unit_circle = Array.from({length: 48}, (_, i) => [Math.cos(i / 48 * 2 * Math.PI), Math.sin(i / 48 * 2 * Math.PI)]);
+const unit_square = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+
+// A random convex polygon: points on an ellipse, taken in angular order.
+function random_convex_polygon() {
+    const k = 3 + Math.floor(Math.random() * 4), r = .35 + Math.random() * .6, squash = .35 + .65 * Math.random();
+    return Array.from({length: k}, () => Math.random() * 2 * Math.PI).sort((a, b) => a - b)
+        .map(a => [Math.cos(a) * r, Math.sin(a) * r * squash]);
+}
+
+// Separating axis theorem for convex polygons: disjoint if and only if some edge normal separates them.
+function polygons_overlap(P, Q) {
+    for (const poly of [P, Q])
+        for (let i = 0; i < poly.length; i++) {
+            const [x1, y1] = poly[i], [x2, y2] = poly[(i + 1) % poly.length];
+            const [nx, ny] = [y2 - y1, x1 - x2];
+            const proj = pts => pts.map(([x, y]) => x * nx + y * ny);
+            const p = proj(P), q = proj(Q);
+            if (Math.max(...p) < Math.min(...q) || Math.max(...q) < Math.min(...p)) return false;
+        }
+    return true;
+}
+
+class Bounding_Volume_Demo extends Scene {
+    constructor() {
+        super();
+        this.widget_options = {aspect: 16 / 10, show_explanation: false, background: color(1, 1, 1, 1)};
+        this.flat = new Material(new Flat_Color_Shader(), {color: color(0, 0, 0, 1)});
+        this.circle = new Point_List(unit_circle);
+        this.square = new Point_List(unit_square);
+        // Every body the demo may ever show is built now, so moving the slider never creates GPU objects.
+        this.bodies = Array.from({length: MAX_BODIES}, () => {
+            const local = random_convex_polygon();
+            const fan = [];                                    // triangulate the convex polygon as a fan
+            for (let i = 1; i + 1 < local.length; i++) fan.push(local[0], local[i], local[i + 1]);
+            return {
+                local, shape: new Point_List(fan), outline: new Point_List(local),
+                x: (Math.random() - .5) * 14, y: (Math.random() - .5) * 8,
+                vx: (Math.random() - .5) * 2, vy: (Math.random() - .5) * 2,
+                angle: Math.random() * 6, spin: (Math.random() - .5) * 1.5,
+            };
+        });
+        this.volumes = ["bounding circle (sphere)", "axis-aligned bounding box", "none: exact test on every pair"];
+        Object.assign(this, {count: 24, speed: 1, volume: 0, stats: ""});
+    }
+
+    make_control_panel() {
+        this.key_triggered_button("Next bounding volume", ["b"], () => this.volume = (this.volume + 1) % this.volumes.length);
+        this.new_line();
+        this.slider("objects", {min: 2, max: MAX_BODIES, step: 1, value: this.count}, v => this.count = v);
+        this.slider("speed", {min: 0, max: 3, step: .05, value: this.speed}, v => this.speed = v);
+        this.new_line();
+        this.live_string(box => box.textContent = this.stats);
+    }
+
+    display(context, program_state) {
+        const gl = context.gl, h = 5, w = h * context.aspect_ratio;
+        program_state.set_camera(Mat4.identity());
+        program_state.projection_transform = Mat4.orthographic(-w, w, -h, h, -1, 1);
+        gl.disable(gl.DEPTH_TEST);
+        const dt = Math.min(program_state.animation_delta_time / 1000, .05) * this.speed;
+
+        const bodies = this.bodies.slice(0, this.count);
+        for (const b of bodies) {
+            b.x += b.vx * dt; b.y += b.vy * dt; b.angle += b.spin * dt;
+            if (Math.abs(b.x) > w) b.vx = -Math.sign(b.x) * Math.abs(b.vx);
+            if (Math.abs(b.y) > h) b.vy = -Math.sign(b.y) * Math.abs(b.vy);
+            b.model = Mat4.translation(b.x, b.y, 0).times(Mat4.rotation(b.angle, 0, 0, 1));
+            b.world = b.local.map(([x, y]) => [...b.model.times(tiny.vec4(x, y, 0, 1))].slice(0, 2));   // same matrix as drawing
+            b.radius = Math.max(...b.local.map(([x, y]) => Math.hypot(x, y)));      // circle about the body's origin
+            const xs = b.world.map(p => p[0]), ys = b.world.map(p => p[1]);
+            b.box = {minx: Math.min(...xs), maxx: Math.max(...xs), miny: Math.min(...ys), maxy: Math.max(...ys)};
+            b.state = 0;                                                            // 0 free, 1 false positive, 2 hit
+        }
+
+        let pairs = 0, exact = 0, false_positives = 0, hits = 0;
+        for (let i = 0; i < bodies.length; i++)
+            for (let j = i + 1; j < bodies.length; j++) {
+                const [a, b] = [bodies[i], bodies[j]];
+                pairs++;
+                const r = a.radius + b.radius;
+                const candidate = this.volume === 2 ? true
+                    : this.volume === 1 ? !(a.box.maxx < b.box.minx || a.box.minx > b.box.maxx || a.box.maxy < b.box.miny || a.box.miny > b.box.maxy)
+                        : (a.x - b.x) ** 2 + (a.y - b.y) ** 2 <= r * r;
+                if (!candidate) continue;
+                exact++;
+                if (polygons_overlap(a.world, b.world)) {
+                    hits++;
+                    a.state = b.state = 2;
+                } else {
+                    false_positives++;
+                    a.state = Math.max(a.state, 1);
+                    b.state = Math.max(b.state, 1);
+                }
+            }
+
+        const fills = [color(.23, .44, .85, 1), color(.9, .6, .18, 1), color(.84, .24, .2, 1)];
+        for (const b of bodies) {
+            if (this.volume === 0)
+                this.circle.draw(context, program_state, Mat4.translation(b.x, b.y, 0).times(Mat4.scale(b.radius, b.radius, 1)),
+                    this.flat.override({color: color(0, 0, 0, .3)}), "LINE_LOOP");
+            if (this.volume === 1)
+                this.square.draw(context, program_state,
+                    Mat4.translation((b.box.minx + b.box.maxx) / 2, (b.box.miny + b.box.maxy) / 2, 0)
+                        .times(Mat4.scale((b.box.maxx - b.box.minx) / 2, (b.box.maxy - b.box.miny) / 2, 1)),
+                    this.flat.override({color: color(0, 0, 0, .3)}), "LINE_LOOP");
+            b.shape.draw(context, program_state, b.model, this.flat.override({color: fills[b.state]}));
+        }
+        gl.enable(gl.DEPTH_TEST);
+        this.stats = `${this.volumes[this.volume]}\n` +
+            `pairs             ${String(pairs).padStart(5)}\n` +
+            `exact tests run   ${String(exact).padStart(5)}  (${pairs ? (100 * exact / pairs).toFixed(1) : 0}%)\n` +
+            `false positives   ${String(false_positives).padStart(5)}\n` +
+            `collisions        ${String(hits).padStart(5)}`;
+    }
+}
+
+new Canvas_Widget(document.getElementById("widget"), [new Bounding_Volume_Demo()]);
+</script>
+</body>
+</html>

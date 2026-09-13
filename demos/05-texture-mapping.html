@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05 · Texture mapping</title>
+<link rel="stylesheet" href="lib/style.css">
+<script type="importmap">{"imports": {"tiny-graphics/": "https://intro-graphics.github.io/TinyGraphics.js/v2/"}}</script>
+</head>
+<body>
+<header>
+  <h1>05 · Texture mapping</h1>
+  <p>A floor made of just two triangles, textured. Change the filter to see aliasing and mipmaps; switch interpolation
+    to see why texture coordinates must be interpolated perspective-correctly. Companion to
+    <a href="../notes/08-texture-mapping.md">notes/08</a>.</p>
+</header>
+<div class="demo">
+  <div id="widget"></div>
+  <details><summary>How the affine mode works</summary>
+    <p>A GPU always interpolates vertex-shader outputs perspective-correctly: it interpolates <code>a/w</code> and
+      <code>1/w</code> linearly on screen and divides. To show what plain screen-space interpolation looks like, the
+      vertex shader outputs <code>uv·w</code> and <code>w</code>, and the fragment shader divides one by the other. The
+      GPU's correction and ours cancel out, leaving the affine result and its kink along the triangles' shared diagonal.</p>
+  </details>
+</div>
+<script type="module">
+import {tiny, defs} from 'tiny-graphics/common.js';
+
+const {vec3, color, Mat4, Matrix, Material, Shader, Texture, Scene, Canvas_Widget} = tiny;
+
+class Texture_Demo_Shader extends Shader {
+    vertex_glsl_code() {
+        return `#version 300 es
+            in vec3 position;
+            in vec2 texture_coord;
+            uniform mat4 projection_camera_model_transform;
+            uniform float repeat;
+            out vec2 f_uv;
+            out vec3 f_uvw;                     // (u·w, v·w, w), for the affine emulation
+            void main() {
+                gl_Position = projection_camera_model_transform * vec4(position, 1.0);
+                f_uv = texture_coord * repeat;
+                f_uvw = vec3(f_uv * gl_Position.w, gl_Position.w);
+            }`;
+    }
+
+    fragment_glsl_code() {
+        return `#version 300 es
+            precision highp float;
+            precision mediump int;
+            in vec2 f_uv;
+            in vec3 f_uvw;
+            uniform sampler2D image;
+            uniform bool affine, show_uv;
+            out vec4 frag_color;
+            void main() {
+                vec2 uv = affine ? f_uvw.xy / f_uvw.z : f_uv;
+                frag_color = show_uv ? vec4(fract(uv), 0.0, 1.0) : texture(image, uv);
+            }`;
+    }
+
+    update_GPU(gl, gpu, program_state, model_transform, m) {
+        const PCM = program_state.projection_transform.times(program_state.view_transform).times(model_transform);
+        gl.uniformMatrix4fv(gpu.projection_camera_model_transform, false, Matrix.column_major(PCM));
+        gl.uniform1f(gpu.repeat, m.repeat);
+        gl.uniform1i(gpu.affine, m.affine ? 1 : 0);
+        gl.uniform1i(gpu.show_uv, m.show_uv ? 1 : 0);
+        gl.uniform1i(gpu.image, 0);
+        if (!m.texture.ready) return;
+        m.texture.activate(gl, 0);
+        // Sampling settings belong to the bound texture object, so they can change from draw to draw.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl[m.min_filter]);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, m.min_filter === "NEAREST" ? gl.NEAREST : gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl[m.wrap]);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl[m.wrap]);
+    }
+}
+
+// The texture image is drawn at load time, so the repository needs no image files.
+function checker_with_letter() {
+    const c = document.createElement("canvas");
+    c.width = c.height = 256;
+    const g = c.getContext("2d");
+    for (let y = 0; y < 8; y++)
+        for (let x = 0; x < 8; x++) {
+            g.fillStyle = (x + y) % 2 ? "#2b3a55" : "#f2efe6";
+            g.fillRect(x * 32, y * 32, 32, 32);
+        }
+    Object.assign(g, {fillStyle: "#d9503f", font: "bold 90px sans-serif", textAlign: "center", textBaseline: "middle"});
+    g.fillText("F", 128, 132);
+    return c.toDataURL();
+}
+
+class Texture_Demo extends Scene {
+    constructor() {
+        super();
+        this.widget_options = {aspect: 16 / 10, show_explanation: false, background: color(1, 1, 1, 1)};
+        this.floor = new defs.Square();                     // two triangles sharing the diagonal from (1,−1) to (−1,1)
+        this.material = new Material(new Texture_Demo_Shader(), {texture: new Texture(checker_with_letter())});
+        this.filters = ["NEAREST", "LINEAR", "LINEAR_MIPMAP_LINEAR"];
+        this.wraps = ["REPEAT", "MIRRORED_REPEAT", "CLAMP_TO_EDGE"];
+        Object.assign(this, {filter: 2, wrap: 0, affine: false, show_uv: false, repeat: 4, tilt: .45});
+    }
+
+    make_control_panel() {
+        this.key_triggered_button("Next filter", ["f"], () => this.filter = (this.filter + 1) % this.filters.length);
+        this.key_triggered_button("Next wrap mode", ["w"], () => this.wrap = (this.wrap + 1) % this.wraps.length);
+        this.new_line();
+        this.key_triggered_button("Perspective-correct ⇄ affine", ["a"], () => this.affine = !this.affine);
+        this.key_triggered_button("Show uv as red/green", ["u"], () => this.show_uv = !this.show_uv);
+        this.new_line();
+        this.slider("uv repeat", {min: 1, max: 40, step: 1, value: this.repeat}, v => this.repeat = v);
+        this.slider("camera tilt", {min: .08, max: 1.5, step: .01, value: this.tilt}, v => this.tilt = v);
+        this.new_line();
+        this.live_string(box => box.textContent =
+            `filter ${this.filters[this.filter]}\nwrap   ${this.wraps[this.wrap]}\nuv     ${this.affine ? "affine (wrong)" : "perspective-correct"}`);
+    }
+
+    display(context, program_state) {
+        const eye = vec3(0, .3 + 9 * Math.sin(this.tilt), 9 * Math.cos(this.tilt));
+        program_state.set_camera(Mat4.look_at(eye, vec3(0, 0, -1), vec3(0, 1, 0)));
+        program_state.projection_transform = Mat4.perspective(Math.PI / 3, context.aspect_ratio, .1, 200);
+        // Lay the square flat: rotate it into the xz plane, with its texture's top edge far from the camera.
+        const model = Mat4.rotation(-Math.PI / 2, 1, 0, 0).times(Mat4.scale(5, 5, 1));
+        this.floor.draw(context, program_state, model, this.material.override({
+            min_filter: this.filters[this.filter], wrap: this.wraps[this.wrap],
+            affine: this.affine, show_uv: this.show_uv, repeat: this.repeat
+        }));
+    }
+}
+
+new Canvas_Widget(document.getElementById("widget"), [new Texture_Demo()]);
+</script>
+</body>
+</html>

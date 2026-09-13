@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04 · Lighting and shading</title>
+<link rel="stylesheet" href="lib/style.css">
+<script type="importmap">{"imports": {"tiny-graphics/": "https://intro-graphics.github.io/TinyGraphics.js/v2/"}}</script>
+<style>.captions { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; color: var(--muted); margin: 4px 0 8px; }</style>
+</head>
+<body>
+<header>
+  <h1>04 · Lighting and shading</h1>
+  <p>One reflection model, evaluated in three places: per face (flat), per vertex (Gouraud) and per fragment (Phong).
+    Lower the subdivision level to see where they differ. Companion to <a href="../notes/07-lighting-and-shading.md">notes/07</a>.</p>
+</header>
+<div class="demo">
+  <div class="captions"><span>flat — per face</span><span>Gouraud — per vertex</span><span>Phong — per fragment</span></div>
+  <div id="widget"></div>
+  <details><summary>What to try</summary>
+    <p>At subdivision level 1 or 2, orbit the light and watch the middle sphere: its highlight jumps between vertices
+      or disappears, because Gouraud shading only evaluates lighting at vertices and interpolates colors between them.
+      Switch between the Phong and Blinn–Phong specular terms at high shininess to compare highlight shapes. The
+      normal-color view shows why the flat sphere needs duplicated vertices.</p>
+  </details>
+</div>
+<script type="module">
+import {tiny, defs} from 'tiny-graphics/common.js';
+
+const {vec3, color, Mat4, Matrix, Material, Shader, Scene, Canvas_Widget} = tiny;
+
+// One shader class, two ways to use it.  The reflection model (shade) is the same GLSL text in both;
+// only the stage that calls it changes.
+class Shading_Demo_Shader extends Shader {
+    constructor(per_vertex) {
+        super();
+        this.per_vertex = per_vertex;
+    }
+
+    shade_glsl() {
+        return `
+            uniform vec3 light_position, camera_center, surface_color;
+            uniform float ka, kd, ks, shininess;
+            uniform bool blinn, show_normals;
+            vec3 shade(vec3 P, vec3 N) {
+                N = normalize(N);
+                if (show_normals) return N * 0.5 + 0.5;
+                vec3 L = normalize(light_position - P);
+                vec3 V = normalize(camera_center - P);
+                float diffuse = max(dot(N, L), 0.0);
+                float specular = 0.0;
+                if (diffuse > 0.0)
+                    specular = blinn ? pow(max(dot(N, normalize(L + V)), 0.0), shininess)
+                                     : pow(max(dot(reflect(-L, N), V), 0.0), shininess);
+                return ka * surface_color + kd * diffuse * surface_color + ks * specular * vec3(1.0);
+            }`;
+    }
+
+    vertex_glsl_code() {
+        return `#version 300 es
+            precision highp float;
+            precision mediump int;
+            in vec3 position, normal;
+            uniform mat4 model_transform, projection_camera_model_transform;
+            uniform mat3 normal_matrix;
+            ${this.per_vertex ? `out vec3 v_color;\n${this.shade_glsl()}` : "out vec3 v_world, v_normal;"}
+            void main() {
+                vec3 world = (model_transform * vec4(position, 1.0)).xyz;
+                vec3 n = normal_matrix * normal;
+                gl_Position = projection_camera_model_transform * vec4(position, 1.0);
+                ${this.per_vertex ? "v_color = shade(world, n);        // Gouraud: light each vertex"
+                                  : "v_world = world; v_normal = n;    // Phong: pass the ingredients on"}
+            }`;
+    }
+
+    fragment_glsl_code() {
+        return `#version 300 es
+            precision highp float;
+            precision mediump int;
+            ${this.per_vertex ? "in vec3 v_color;" : `in vec3 v_world, v_normal;\n${this.shade_glsl()}`}
+            out vec4 frag_color;
+            void main() {
+                ${this.per_vertex ? "frag_color = vec4(v_color, 1.0);   // interpolated color"
+                                  : "frag_color = vec4(shade(v_world, v_normal), 1.0);   // light each fragment"}
+            }`;
+    }
+
+    update_GPU(gl, gpu, program_state, model_transform, m) {
+        const PCM = program_state.projection_transform.times(program_state.view_transform).times(model_transform);
+        gl.uniformMatrix4fv(gpu.model_transform, false, Matrix.column_major(model_transform));
+        gl.uniformMatrix4fv(gpu.projection_camera_model_transform, false, Matrix.column_major(PCM));
+        gl.uniformMatrix3fv(gpu.normal_matrix, false, Matrix.column_major(Mat4.normal_matrix(model_transform)));
+        gl.uniform3fv(gpu.light_position, m.light_position);
+        gl.uniform3fv(gpu.camera_center, program_state.camera_transform.times(tiny.vec4(0, 0, 0, 1)).to3());
+        gl.uniform3fv(gpu.surface_color, m.surface_color);
+        for (const k of ["ka", "kd", "ks", "shininess"]) gl.uniform1f(gpu[k], m[k]);
+        gl.uniform1i(gpu.blinn, m.blinn ? 1 : 0);
+        gl.uniform1i(gpu.show_normals, m.show_normals ? 1 : 0);
+    }
+}
+
+class Shading_Demo extends Scene {
+    constructor() {
+        super();
+        this.widget_options = {aspect: 5 / 2, show_explanation: false, background: color(1, 1, 1, 1)};
+        // Build every level once, up front: shapes must not be created while a slider is being dragged.
+        const Flat_Sphere = defs.Subdivision_Sphere.prototype.make_flat_shaded_version();
+        this.levels = [1, 2, 3, 4, 5].map(k => ({smooth: new defs.Subdivision_Sphere(k), flat: new Flat_Sphere(k)}));
+        this.per_fragment = new Material(new Shading_Demo_Shader(false), {surface_color: vec3(.22, .45, .8)});
+        this.per_vertex = new Material(new Shading_Demo_Shader(true), {surface_color: vec3(.22, .45, .8)});
+        Object.assign(this, {level: 2, ka: .15, kd: .7, ks: .6, shininess: 40, blinn: false, spin: true, show_normals: false, angle: .8});
+    }
+
+    make_control_panel() {
+        this.slider("subdivision level (triangles × 4 per level)", {min: 1, max: 5, step: 1, value: this.level}, v => this.level = v);
+        this.new_line();
+        this.slider("ambient ka", {min: 0, max: 1, step: .01, value: this.ka}, v => this.ka = v);
+        this.slider("diffuse kd", {min: 0, max: 1, step: .01, value: this.kd}, v => this.kd = v);
+        this.slider("specular ks", {min: 0, max: 1, step: .01, value: this.ks}, v => this.ks = v);
+        this.slider("shininess α", {min: 1, max: 200, step: 1, value: this.shininess}, v => this.shininess = v);
+        this.new_line();
+        this.key_triggered_button("Phong r·v ⇄ Blinn n·h", ["b"], () => this.blinn = !this.blinn);
+        this.key_triggered_button("Orbit the light on / off", ["l"], () => this.spin = !this.spin);
+        this.key_triggered_button("Color by normal", ["n"], () => this.show_normals = !this.show_normals);
+        this.new_line();
+        this.live_string(box => box.textContent =
+            `${this.blinn ? "Blinn–Phong" : "Phong"} specular, ${4 * 4 ** this.level} triangles per sphere`);
+    }
+
+    display(context, program_state) {
+        if (this.spin) this.angle += program_state.animation_delta_time * .0006;
+        program_state.set_camera(Mat4.look_at(vec3(0, .6, 7.5), vec3(0, 0, 0), vec3(0, 1, 0)));
+        program_state.projection_transform = Mat4.perspective(Math.PI / 6, context.aspect_ratio, .1, 100);
+        const light_position = vec3(4 * Math.cos(this.angle), 2.5, 4 * Math.sin(this.angle) + 2);
+        const settings = {light_position, ka: this.ka, kd: this.kd, ks: this.ks, shininess: this.shininess, blinn: this.blinn, show_normals: this.show_normals};
+        const spheres = this.levels[this.level - 1];
+        const items = [[spheres.flat, this.per_fragment, -2.4], [spheres.smooth, this.per_vertex, 0], [spheres.smooth, this.per_fragment, 2.4]];
+        for (const [shape, material, x] of items)
+            shape.draw(context, program_state, Mat4.translation(x, 0, 0).times(Mat4.rotation(.4, 0, 1, 0)), material.override(settings));
+    }
+}
+
+new Canvas_Widget(document.getElementById("widget"), [new Shading_Demo()]);
+</script>
+</body>
+</html>
