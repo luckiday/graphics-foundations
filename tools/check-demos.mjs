@@ -84,7 +84,7 @@ for (const demo of demos) {
   const buttons = page.locator('.tg-panel button');
   for (let b = 0; b < await buttons.count(); b++) {
     const button = buttons.nth(b);
-    const label = (await button.textContent()).replace(/^\([^)]*\)\s*/, '').replace(/\W+/g, '_').slice(0, 30);
+    const label = (await button.locator('span').last().textContent()).replace(/\W+/g, '_').slice(0, 30);
     await button.dispatchEvent('pointerdown');
     await button.dispatchEvent('pointerup');
     await page.waitForTimeout(250);
