@@ -16,7 +16,7 @@ A circle of radius $`r`$ sampled at $`N`$ angles is a regular $`N`$-gon:
 P_k = \left(r\cos\, \tfrac{2\pi k}{N},\ r\sin\, \tfrac{2\pi k}{N}\right), \qquad k = 0, \dots, N-1.
 ```
 
-Its largest gap from the true circle is $`r\,(1 - \cos\, \tfrac{\pi}{N})`$, which shrinks as $`1/N^2`$. Doubling the sample count cuts the error by about four. That is why a sphere with a few hundred triangles already looks round, except along its **silhouette**, where the polygon edges show.
+Its largest gap from the true circle is $`r\,(1 - \cos\, \tfrac{\pi}{N})`$, which shrinks as $`1/N^2`$. Doubling the sample count cuts the error by about four. So a sphere with a few hundred triangles is already geometrically close to round. With smooth normals (§3.4) its interior also *shades* round. Only the **silhouette** still shows polygon edges, because shading cannot change an outline.
 
 Surfaces are discretized the same way, with two parameters. A **parametric surface** $`S(s, t)`$ sampled on a grid of $`(s_i, t_j)`$ gives rows and columns of points, and each grid cell splits into two triangles. A **surface of revolution** sweeps a 2D profile curve around an axis: $`s`$ picks a point on the profile, $`t`$ picks the rotation angle. Cylinders, cones, tori, vases and bullets are all built this way.
 
@@ -36,7 +36,7 @@ texture_coord[i]  where it samples an image (chapter 8)
 
 ![An indexed mesh](../figures/indexed-mesh.svg)
 
-For a closed mesh the savings are large. A typical vertex is shared by about six triangles, so an indexed mesh needs about one sixth as many vertices as a plain triangle list.
+For a closed mesh the savings are large. A typical vertex is shared by about six triangles, so an indexed mesh needs about one sixth as many vertices as a plain triangle list. The index list still has three entries per triangle, but an index takes 2 or 4 bytes, while a vertex with a position, a normal and a texture coordinate takes 32 (eight 4-byte floats).
 
 **Triangle strip.** After the first two vertices, each new vertex forms a triangle with the previous two, so $`N`$ triangles need only $`N + 2`$ vertices.
 
@@ -46,7 +46,7 @@ The GPU flips the order of every other triangle, $`(i, i{+}1, i{+}2)`$ for even 
 
 ## 3.3 Winding order and back faces
 
-The order in which a triangle lists its vertices defines a direction. By convention, a triangle whose vertices appear **counter-clockwise on screen** is **front-facing**. For a closed mesh whose triangles all wind counter-clockwise when viewed from outside, the back faces are exactly the triangles facing away from the camera. `gl.enable(gl.CULL_FACE)` skips drawing them, which roughly halves the work for closed objects.
+The order in which a triangle lists its vertices defines a direction. By convention, a triangle whose vertices appear **counter-clockwise on screen** is **front-facing**. For a closed mesh whose triangles all wind counter-clockwise when viewed from outside, the back faces are exactly the triangles facing away from the camera. `gl.enable(gl.CULL_FACE)` skips drawing them, which roughly halves the rasterization and fragment-shading work for closed objects. Every vertex is still transformed, because culling happens after the vertex shader.
 
 The 3D equivalent: the face normal $`(B - A) \times (C - A)`$ of triangle $`ABC`$ points toward whoever sees $`A \to B \to C`$ as counter-clockwise.
 
@@ -93,7 +93,7 @@ class Square extends Shape {
 ## Check yourself
 
 1. How many vertices does a triangle strip need for 10 triangles? How many would a plain triangle list need?
-2. A UV sphere has 32 slices and 16 stacks. Roughly how many triangles does it have, and why do the two poles differ from the rest?
+2. A UV sphere (a surface of revolution, §3.1) has 32 slices (columns around the axis) and 16 stacks (rows from pole to pole). Roughly how many triangles does it have, and why do the two poles differ from the rest?
 3. Why does a flat-shaded cube need 24 vertices while a smooth-shaded sphere can share every vertex?
 4. The triangle $`A = (0,0,0)`$, $`B = (0,1,0)`$, $`C = (1,0,0)`$ is viewed from $`+z`$, looking down the $`-z`$ axis. Is it front-facing?
 5. A circle is approximated with $`N = 16`$ segments. What is the maximum gap from the true circle, as a fraction of the radius? What $`N`$ is needed to bring it under 0.1%?

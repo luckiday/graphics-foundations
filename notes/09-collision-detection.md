@@ -40,7 +40,7 @@ function spheres_overlap(a, b) {
 }
 ```
 
-A sphere is rotation-invariant, so it never needs updating when the object turns, only when it moves.
+A sphere is rotation-invariant: when the object turns, only its center moves (it transforms like any other point), and its radius changes only if the object is scaled. If the center is the object's pivot, turning changes nothing at all.
 
 **Fitting a sphere.** Centering it at the average vertex, with the radius reaching the farthest vertex, is easy but loose. **Ritter's algorithm** is a fast approximation: start from the two most distant points found in a quick pass, then grow the sphere to include each outlier. It is typically within 5–20% of the optimal radius. **Welzl's algorithm** finds the exact minimal sphere in expected linear time.
 
@@ -72,7 +72,7 @@ Only finitely many axes need testing:
 | two convex polyhedra in 3D | every face normal of both, plus the cross product of every edge of one with every edge of the other |
 | two OBBs | 3 + 3 face axes + 3 × 3 edge-pair cross products = **15** |
 
-**Projecting** a shape onto an axis $`𝐚`$ means taking the minimum and maximum of $`𝐩\cdot𝐚`$ over its vertices. For a box, center $`\pm`$ extents is enough.
+**Projecting** a shape onto an axis $`𝐚`$ means taking the minimum and maximum of $`𝐩\cdot𝐚`$ over its vertices. For a box with center $`𝐜`$, unit axes $`𝐮_i`$ and half-extents $`e_i`$, there is no need to visit all eight corners: the projection is $`𝐜\cdot𝐚 \pm \sum_i e_i\,\lvert 𝐮_i\cdot𝐚 \rvert`$. For an AABB and a coordinate axis this is just center $`\pm`$ extent.
 
 ```js
 function convex_polygons_overlap(P, Q) {                 // arrays of [x, y], convex, in order
@@ -88,7 +88,7 @@ function convex_polygons_overlap(P, Q) {                 // arrays of [x, y], co
 }
 ```
 
-Demo 07 uses exactly this function for its narrow phase. Its orange shapes are **false positives**: their bounding volumes overlap, but SAT proves the shapes themselves do not.
+Demo 07 uses this same function, named `polygons_overlap`, for its narrow phase. Its orange shapes are **false positives**: their bounding volumes overlap, but SAT proves the shapes themselves do not.
 
 The theorem requires **convex** shapes. A concave object is split into convex pieces, or handled with a hierarchy of bounding volumes that ends at individual triangles.
 
@@ -114,6 +114,7 @@ Simulations advance in discrete steps. Two problems follow.
 ```js
 accumulator += Math.min(frame_seconds, 0.1);       // cap to avoid a "spiral of death" after a stall
 while (accumulator >= dt) {
+    previous_state = copy(current_state);
     step_simulation(dt);                            // detect & resolve collisions here
     accumulator -= dt;
 }
@@ -128,6 +129,8 @@ const alpha = accumulator / dt;                     // draw at blend(previous_st
 
 $`e = 1`$ is a perfectly elastic bounce; $`e = 0`$ stops the motion along the normal.
 
+Apply the bounce only when the objects are **approaching**, $`𝐯\cdot\hat{𝐧} \lt 0`$. Objects often still overlap on the step after a bounce. Reflecting again then turns their escape velocity back around, and they stick and jitter inside each other, the most common bug in student collision code.
+
 ---
 
 ## Check yourself
@@ -136,7 +139,7 @@ $`e = 1`$ is a perfectly elastic bounce; $`e = 0`$ stops the motion along the no
 2. AABB A spans $`[0, 2] \times [0, 2] \times [0, 2]`$ and AABB B spans $`[1, 3] \times [2.5, 4] \times [0, 1]`$. Do they overlap? On which axis are they separated?
 3. Why is an AABB a poor bounding volume for a long, thin stick rotated 45°? What would you use instead?
 4. How many separating axes must be tested for two triangles in 3D?
-5. A ball moves at 30 m/s toward a wall 5 cm thick, simulated at 60 steps per second. Can a per-step overlap test miss the collision?
+5. A ball 4 cm across moves at 30 m/s toward a wall 5 cm thick, simulated at 60 steps per second. Can a per-step overlap test miss the collision?
 6. A ball hits the floor ($`\hat{𝐧} = (0, 1, 0)`$) with velocity $`(2, -5, 0)`$. With $`e = 0.8`$, what is its velocity after the bounce?
 
 <details><summary>Answers</summary>
@@ -145,7 +148,7 @@ $`e = 1`$ is a perfectly elastic bounce; $`e = 0`$ stops the motion along the no
 2. $`x`$: $`[0, 2]`$ and $`[1, 3]`$ overlap. $`y`$: $`[0, 2]`$ and $`[2.5, 4]`$ are disjoint. So the boxes do **not** overlap; they are separated along $`y`$.
 3. The AABB of a diagonal stick is a square that is mostly empty space, so it overlaps many things the stick does not. Use an OBB aligned with the stick, or a capsule.
 4. 2 face normals, plus $`3 \times 3 = 9`$ edge-pair cross products, for 11 in all. (Degenerate, parallel cases need care.)
-5. Yes. Each step moves the ball $`30 / 60 = 0.5`$ m, ten times the wall's thickness. The ball can be in front of the wall at one step and behind it at the next without ever overlapping it.
+5. Yes. Each step moves the ball $`30 / 60 = 0.5`$ m, but it overlaps the wall only while its center is within a band $`0.05 + 0.04 = 0.09`$ m wide. The ball can be in front of the wall at one step and behind it at the next without ever overlapping it.
 6. $`𝐯\cdot\hat{𝐧} = -5`$, so $`𝐯' = (2, -5, 0) - 1.8 \cdot (-5)(0, 1, 0) = (2, -5 + 9, 0) = (2, 4, 0)`$.
 
 </details>

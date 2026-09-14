@@ -14,7 +14,7 @@
 | inner loop | which pixels does it cover? | which surface does the ray hit first? |
 | visibility | z-buffer | nearest intersection |
 | shadows, reflections, refraction | extra passes and approximations (chapter 10) | follow more rays |
-| cost | grows with scene size; very GPU-friendly | grows with pixels × ray depth; needs acceleration structures |
+| cost | grows with scene size; very GPU-friendly | grows with pixels × rays per pixel × cost per ray (about $`\log\, N`$ with an acceleration structure) |
 
 **Ray casting** shoots one ray per pixel and shades the first hit, which gives the same image as rasterization. **Ray tracing**, often called Whitted-style after Turner Whitted's 1980 paper, keeps following rays from each hit toward lights, along mirror reflections and through transparent materials. That gives shadows, reflections and refraction naturally.
 
@@ -53,7 +53,8 @@ t = -b \pm \sqrt{b^2 - c}, \qquad b = 𝐦\cdot𝐝,\ c = 𝐦\cdot𝐦 - R^2.
 ```
 
 - A negative discriminant means a miss.
-- Otherwise take the smaller root if it is greater than $`\varepsilon`$, else the larger one (the ray starts inside the sphere).
+- Otherwise take the smaller root if it is greater than $`\varepsilon`$, else the larger one if it is (the ray starts inside the sphere). If neither is, the sphere is behind the ray: a miss.
+- This form needs a unit $`𝐝`$. With an unnormalized $`𝐝`$ the quadratic's leading coefficient is $`𝐝\cdot𝐝`$, not 1.
 - The normal at the hit point $`𝐩`$ is $`(𝐩 - 𝐜)/R`$.
 
 ### Plane
@@ -68,8 +69,14 @@ with no hit when $`𝐝\cdot𝐧 \approx 0`$ (the ray is parallel to the plane).
 
 ### Triangle
 
-1. Intersect the ray with the triangle's plane, whose normal is $`(B - A) \times (C - A)`$.
-2. Decide whether the hit point $`𝐩`$ lies inside the triangle. Compute its barycentric coordinates (chapter 2): inside means all three are $`\ge 0`$. Equivalently, $`𝐩`$ must be on the inner side of all three edges: $`\big((B - A)\times(𝐩 - A)\big)\cdot𝐧 \ge 0`$, and likewise for edges $`BC`$ and $`CA`$.
+1. Intersect the ray with the triangle's plane, whose normal is $`𝐍 = (B - A) \times (C - A)`$.
+2. Decide whether the hit point $`𝐩`$ lies inside the triangle. Compute its barycentric coordinates (chapter 2): inside means all three are $`\ge 0`$. Equivalently, $`𝐩`$ must be on the inner side of all three edges: $`\big((B - A)\times(𝐩 - A)\big)\cdot𝐍 \ge 0`$, and likewise for edges $`BC`$ and $`CA`$. Here the direction of $`𝐍`$ matters: it must be $`(B - A)\times(C - A)`$, not its negative. Dividing each edge test by $`𝐍\cdot𝐍`$ gives the barycentric coordinates themselves:
+
+```math
+\alpha = \frac{\big((C - B)\times(𝐩 - B)\big)\cdot𝐍}{𝐍\cdot𝐍},\qquad
+\beta = \frac{\big((A - C)\times(𝐩 - C)\big)\cdot𝐍}{𝐍\cdot𝐍},\qquad
+\gamma = \frac{\big((B - A)\times(𝐩 - A)\big)\cdot𝐍}{𝐍\cdot𝐍}.
+```
 
 The **Möller–Trumbore** algorithm combines both steps into one small linear solve for $`(t, \beta, \gamma)`$. It is the standard implementation.
 
@@ -80,13 +87,14 @@ Ray from the origin through $`(1, 1, 1)`$; triangle $`A = (0, 4, 0)`$, $`B = (8,
 1. **Ray:** $`𝐫(t) = (t, t, t)`$.
 2. **Plane:** the intercepts $`x = 8`$, $`y = 4`$, $`z = 8`$ give $`\frac{x}{8} + \frac{y}{4} + \frac{z}{8} = 1`$, or $`x + 2y + z = 8`$, with normal $`(1, 2, 1)`$.
 3. **Intersection:** $`t + 2t + t = 8`$, so $`t = 2`$ and $`𝐩 = (2, 2, 2)`$.
-4. **Inside?** Solve $`𝐩 = \alpha A + \beta B + \gamma C`$. From $`y`$: $`4\alpha = 2`$, so $`\alpha = 0.5`$. From $`x`$: $`8\beta = 2`$, so $`\beta = 0.25`$. From $`z`$: $`8\gamma = 2`$, so $`\gamma = 0.25`$. The weights sum to 1 and are all non-negative, so the hit is **inside**.
+4. **Inside?** Solve $`𝐩 = \alpha A + \beta B + \gamma C`$. From $`y`$: $`4\alpha = 2`$, so $`\alpha = 0.5`$. From $`x`$: $`8\beta = 2`$, so $`\beta = 0.25`$. From $`z`$: $`8\gamma = 2`$, so $`\gamma = 0.25`$. The weights sum to 1 and are all non-negative, so the hit is **inside**. The formulas above agree: $`𝐍 = (B - A)\times(C - A) = (-32, -64, -32)`$ gives $`(0.5, 0.25, 0.25)`$.
+5. **Common mistake.** $`𝐍`$ points *opposite* to the $`(1, 2, 1)`$ of step 2. Any multiple of the normal works for the plane equation, but the edge tests need the right sign: with $`(1, 2, 1)`$ all three come out negative, and the hit is wrongly reported as outside.
 
 ## 11.4 Shading a hit: recursive ray tracing
 
 At each hit point $`𝐩`$ with normal $`𝐧`$, the incoming ray direction is $`𝐝`$:
 
-- **Shadow rays.** For each light, cast a ray from $`𝐩 + \varepsilon𝐧`$ toward the light. If it hits something before reaching the light, that light contributes nothing, so the point is in shadow for that light. Otherwise add the local diffuse and specular terms (chapter 7).
+- **Shadow rays.** For each light, cast a ray from $`𝐩 + \varepsilon𝐧`$ toward the light. (Offset toward the side the new ray travels into: $`𝐩 + \varepsilon𝐧`$ for shadow and reflection rays, $`𝐩 - \varepsilon𝐧`$ for a transmitted ray. Requiring $`t \gt \varepsilon`$, as in §11.3, is the other common remedy; demo 06 uses both.) If it hits something before reaching the light, that light contributes nothing, so the point is in shadow for that light. Otherwise add the local diffuse and specular terms (chapter 7).
 - **Reflection ray.** Along the mirror direction:
 
 ```math
@@ -99,7 +107,9 @@ At each hit point $`𝐩`$ with normal $`𝐧`$, the incoming ray direction is $
 𝐭 = \eta\,𝐝 + \left(\eta c - \sqrt{1 - \eta^2(1 - c^2)}\right)𝐧.
 ```
 
-If the quantity under the square root is negative, there is no refracted ray. That is **total internal reflection**, which happens when leaving a denser medium at a steep angle.
+The formula assumes unit vectors, with $`𝐧`$ on the side the ray comes from ($`𝐝\cdot𝐧 \lt 0`$). When a ray *leaves* an object, the outward normal gives $`𝐝\cdot𝐧 \gt 0`$: flip $`𝐧`$ and swap the indices, so that $`\eta = \eta_{\text{inside}}/\eta_{\text{outside}}`$. Forgetting this produces no error, just a wrong ray. Leaving glass at $`30°`$, the correct ray leaves at $`48.6°`$, but the unflipped formula returns $`19.5°`$.
+
+If the quantity under the square root is negative, there is no refracted ray. That is **total internal reflection**. It happens only when going into a medium of lower index ($`\eta_1 \gt \eta_2`$), at an angle from the normal larger than the critical angle $`\theta_c = \arcsin(\eta_2/\eta_1)`$, about $`41.8°`$ from glass into air.
 
 The color at the hit combines everything recursively:
 
@@ -118,7 +128,7 @@ Each hit spawns a shadow ray per light, plus a reflection and a transmission ray
 **Recursion stops when:**
 - a ray hits nothing (it takes the background color);
 - a maximum depth is reached;
-- the accumulated weight (the product of $`k_r`$ and $`k_t`$ along the path) is too small to matter.
+- the accumulated weight (the product of the $`k_r`$ or $`k_t`$ factors taken at each hit along the path) is too small to matter.
 
 **Cost.** With $`m`$ lights and a full binary tree (reflection and transmission at every hit) of depth $`n`$:
 
@@ -127,6 +137,8 @@ Each hit spawns a shadow ray per light, plus a reflection and a transmission ray
 \text{shadow rays} = m\,(2^n - 1), \qquad
 \text{total rays} = (m + 1)(2^n - 1).
 ```
+
+Here depth $`n`$ counts the eye ray's hit as level 1, so a path makes at most $`n - 1`$ bounces. Demo 06's slider counts bounces instead, so its setting 3 means $`n = 4`$. Demo 06 also follows only mirror rays, which makes each tree a single chain: $`(m + 1)\,n`$ rays, growing linearly rather than exponentially.
 
 Growth is exponential in the depth. In practice most materials are not both reflective and transparent, and weight-based termination prunes most branches.
 
@@ -140,8 +152,8 @@ Intersection tests dominate the running time; commonly quoted figures are 75–9
 The main speedups are:
 
 - **Bounding volumes** around complex objects: test the cheap volume first (chapter 9).
-- **Acceleration structures:** bounding volume hierarchies, k-d trees and grids. They reduce the cost per ray from $`O(N)`$ to roughly $`O(\log\, N)`$ for $`N`$ primitives.
-- **Coherence and parallelism.** Pixels are independent, so rays can be traced on many cores or GPUs. Demo 06 runs one ray tree per pixel, in parallel, in a fragment shader.
+- **Acceleration structures:** bounding volume hierarchies, k-d trees and grids. They reduce the cost per ray from $`O(N)`$ to roughly $`O(\log\, N)`$ for $`N`$ primitives (for BVHs and k-d trees on typical scenes; building the structure costs about $`O(N\log\, N)`$, once).
+- **Coherence and parallelism.** Pixels are independent, so rays can be traced on many cores or GPUs. Demo 06 traces every pixel in parallel, in a fragment shader. It follows mirror rays only, so each pixel's tree is a single chain, unrolled into a loop because GLSL has no recursion.
 
 ## 11.6 Beyond Whitted: path tracing
 

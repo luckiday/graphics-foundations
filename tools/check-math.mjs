@@ -231,5 +231,72 @@ function assert(label, cond) {
     expect('exercises/final-practice.md', 'snell', [f4(st), `${f4(Math.asin(st) * 180 / Math.PI)}°`]);
 }
 
+// ── additions: chapters 2, 5, 6, 7, 11, 12 and the new practice problems ────────────────────
+{
+    const sub = (a, b) => a.map((x, i) => x - b[i]);
+    const area2 = (A, B, C) => ((B[0] - A[0]) * (C[1] - A[1]) - (B[1] - A[1]) * (C[0] - A[0])) / 2;
+    const P = [0, 0], Q = [4, 0], R = [0, 4];
+    const bary = X => [area2(X, Q, R), area2(P, X, R)].map(a => a / area2(P, Q, R));
+    const [a1, b1] = bary([1, 1]), [a3, b3] = bary([3, 3]);
+    assert('ch2 example: (1/2, 1/4, 1/4)', a1 === 0.5 && b1 === 0.25);
+    expect('notes/02-points-vectors-coordinates.md', 'barycentric of (3,3)',
+        [`\\mathrm{area}(X,Q,R) = ${area2([3, 3], Q, R)}`, `\\mathrm{area}(P,X,R) = ${area2(P, [3, 3], R)}`]);
+    assert('ch2 Q3: (-1/2, 3/4, 3/4)', a3 === -0.5 && b3 === 0.75);
+
+    const model = mat4.mul(mat4.translation(2, 0, 0), mat4.rotation(Math.PI / 2, [0, 0, 1]));
+    const w = apply(model, [1, 0, 0, 1]);
+    expect('notes/05-change-of-basis.md', 'ch5 Q5 world', `(${w.slice(0, 3).map(x => f4(x + 0)).join(', ')})`);
+
+    const zndc = (n, f, z) => (f + n) / (f - n) + 2 * f * n / ((f - n) * z);
+    expect('notes/06-viewing-and-projection.md', 'ch6 Q5', [f4(zndc(0.1, 1000, -1)), f4(zndc(1, 100, -10))]);
+
+    const l = [0, 0.6, 0.8], h = vec3.normalize([0, 0.6, 1.8]), rv = 0.8, nh = h[2];
+    const I = s => 0.1 + 0.6 * 0.8 + 0.3 * s;
+    expect('notes/07-lighting-and-shading.md', 'ch7 Q1 moved viewer',
+        [I(rv ** 10).toFixed(3), I(nh ** 10).toFixed(3), I(nh ** 40).toFixed(3), f4(nh)]);
+
+    const A = [0, 4, 0], B = [8, 0, 0], C = [0, 0, 8], p = [2, 2, 2], N = vec3.cross(sub(B, A), sub(C, A));
+    const nn = vec3.dot(N, N), edge = (U, V) => vec3.dot(vec3.cross(sub(V, U), sub(p, U)), N) / nn;
+    expect('notes/11-ray-tracing.md', 'triangle normal', `(${N.join(', ')})`);
+    assert('ch11 formula barycentrics (0.5, 0.25, 0.25)', edge(B, C) === 0.5 && edge(C, A) === 0.25 && edge(A, B) === 0.25);
+    const deg = x => (x * 180 / Math.PI).toFixed(1);
+    expect('notes/11-ray-tracing.md', 'refraction orientation',
+        [`${deg(Math.asin(1.5 * 0.5))}°`, `${deg(Math.asin(0.5 / 1.5))}°`, `${deg(Math.asin(1 / 1.5))}°`]);
+
+    // chapter 12: picking, done with a Gauss–Jordan inverse of P·V
+    const inv = m => {
+        const a = mat4.toRows(m).map((row, i) => [...row, ...[0, 1, 2, 3].map(j => +(i === j))]);
+        for (let c = 0; c < 4; c++) {
+            const piv = a.slice(c).reduce((best, row, k) => Math.abs(row[c]) > Math.abs(a[best][c]) ? c + k : best, c);
+            [a[c], a[piv]] = [a[piv], a[c]];
+            const d = a[c][c]; a[c] = a[c].map(x => x / d);
+            for (let r = 0; r < 4; r++) if (r !== c) { const k = a[r][c]; a[r] = a[r].map((x, j) => x - k * a[c][j]); }
+        }
+        return mat4.fromRows(a.map(row => row.slice(4)));
+    };
+    const PV = inv(mat4.mul(mat4.perspective(Math.PI / 2, 1, 1, 11), mat4.lookAt([0, 0, 5], [0, 0, 0], [0, 1, 0])));
+    const near = apply(PV, [0.5, 0.5, -1, 1]), far = apply(PV, [0.5, 0.5, 1, 1]);
+    expect('notes/12-building-a-graphics-project.md', 'picking', [
+        `(${near.map(f4).join(', ')})`, `(${far.map(f4).join(', ')})`, `(${ndc(far).map(f4).join(', ')})`,
+        `(${sub(ndc(far), ndc(near)).map(f4).join(', ')})`, `(${sub(far.slice(0, 3), ndc(near)).map(f4).join(', ')})`,
+        `(${[2 * 600 / 1600 - 1, 1 - 2 * 200 / 1600].join(', ')})`]);
+    const k = -60 * Math.log(0.9);
+    expect('notes/12-building-a-graphics-project.md', 'smoothing', [`0.9^{15} \\approx ${(0.9 ** 15).toFixed(3)}`,
+        `0.9^{36} \\approx ${(0.9 ** 36).toFixed(4)}`, `k = ${k.toFixed(2)}`, `\\approx ${Math.exp(-6.32 * 0.25).toFixed(3)}`]);
+
+    const tri = vec3.cross([0, 2, 0], [2, 0, 0]);
+    expect('exercises/midterm-practice.md', 'winding', [`(${tri.join(', ')})`, `= ${vec3.dot([0, 0, 5], tri)}`]);
+    const T = (x, y) => mat4.translation(x, y, 0), Rz = t => mat4.rotation(t, [0, 0, 1]);
+    const upper = mat4.chain(T(1, 1.5), Rz(Math.PI / 2), T(1, 0)), fore = mat4.chain(upper, T(1, 0), Rz(-Math.PI / 2), T(1, 0));
+    const at = (m, x) => `(${apply(m, [x, 0, 0, 1]).slice(0, 2).map(v => f4(v + 0)).join(', ')})`;
+    expect('exercises/midterm-practice.md', 'two-joint arm',
+        [at(upper, 0), at(mat4.mul(upper, T(1, 0)), 0), at(fore, 0), at(fore, 1)]);
+
+    const d = vec3.normalize([(2 * 5.5 / 8 - 1) * 2, 1 - 2 * 1.5 / 4, -1]);
+    const m = [-1.5, -0.5, 2], bb = vec3.dot(m, d), cc = vec3.dot(m, m) - 0.25, t1 = -bb - Math.sqrt(bb * bb - cc);
+    expect('exercises/final-practice.md', 'primary ray', [`(${d.map(f4).join(', ')})`, f4(bb), f4(t1),
+        `(${d.map(x => f4(x * t1)).join(', ')})`]);
+}
+
 console.log(`\n${passed} checks passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

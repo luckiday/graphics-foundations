@@ -59,6 +59,10 @@ Instead of $`𝐫\cdot𝐯`$, Blinn uses the **halfway vector**
 
 When the viewer sits exactly in the mirror direction, $`𝐡 = 𝐧`$ and both variants peak. Blinn–Phong's highlight is broader for the same exponent. Roughly, $`\alpha' \approx 4\alpha`$ gives a similar look. It behaves better at grazing angles, and it is what most real-time code uses, including TinyGraphics' `Phong_Shader`.
 
+**Common mistake: highlights on the dark side.** The formulas as written allow specular light when $`𝐧\cdot𝐥 \le 0`$, that is, when the light is behind the surface, because $`𝐧\cdot𝐡`$ can still be positive. Real code sets the specular term to zero whenever $`𝐧\cdot𝐥 \le 0`$. TinyGraphics' `Phong_Shader` and demo 04 both do.
+
+**In TinyGraphics,** $`k_a, k_d, k_s, \alpha'`$ are the material options `ambient`, `diffusivity`, `specularity` and `smoothness`. Its ambient term is `color * ambient`, with no light intensity. The diffuse term is tinted by both the surface `color` and the light's color; the specular term by the light's color only. `ambient` defaults to 0, so a surface facing away from every light is pure black until you set it.
+
 ### Light sources
 
 | Type | Represented as | $`𝐥`$ at point $`P`$ | Attenuation |
@@ -71,12 +75,14 @@ When the viewer sits exactly in the mirror direction, $`𝐡 = 𝐧`$ and both v
 $`f_{\text{att}} = \dfrac{1}{k_c + k_l d + k_q d^2}`$
 gives artists control and avoids the singularity at $`d = 0`$.
 
-**Spotlight test.** $`P`$ is inside the cone when the angle between the axis and the direction to $`P`$ is at most the cutoff $`\alpha`$:
+**In TinyGraphics** a light is `new Light(position_or_vector, color, size)`. With $`w = 0`$ the vector points *toward* the light, not along its rays, so using the sun's travel direction lights the back of everything. `Phong_Shader` uses $`f_{\text{att}} = 1/(1 + d^2/\text{size})`$, that is $`k_c = 1`$, $`k_l = 0`$ and $`k_q = 1/\text{size}`$. It applies this even to $`w = 0`$ lights, taking $`d`$ as the length of the stored vector. So `new Light(vec4(0, 1, 0, 0), color(1, 1, 1, 1), 1)` shines at half strength. Give directional lights a huge size, such as `1e6`.
+
+**Spotlight test.** $`P`$ is inside the cone when the angle between the axis and the direction to $`P`$ is at most the cutoff $`\theta_c`$ ($`𝐃`$ must be unit length):
 
 ![Spotlight](../figures/spotlight.svg)
 
 ```math
-\mathrm{normalize}(P - P_s) \cdot 𝐃 \ \ge\ \cos\, \alpha.
+\mathrm{normalize}(P - P_s) \cdot 𝐃 \ \ge\ \cos\, \theta_c.
 ```
 
 Comparing cosines avoids an `acos`. For a soft edge, fade between an inner and an outer cutoff with `smoothstep`.
@@ -91,7 +97,7 @@ Comparing cosines avoids an `acos`. For a soft edge, fade between an inner and a
 
 Do not confuse the Phong *reflection model* (§7.2) with Phong *shading*, which is this per-pixel interpolation scheme. They are different ideas that happen to share an inventor.
 
-**Why Gouraud misses highlights.** If a sharp highlight falls in the middle of a large triangle, none of its three vertices sees it. Interpolating three dim colors can never produce a bright center. Low tessellation makes this obvious: in demo 04, set the sphere slices to 8 and move the light. Gouraud also shows **Mach bands**: the eye exaggerates the kinks where the linear color slope changes at triangle edges.
+**Why Gouraud misses highlights.** If a sharp highlight falls in the middle of a large triangle, none of its three vertices sees it. Interpolating three dim colors can never produce a bright center. Low tessellation makes this obvious: in demo 04, set the subdivision level to 1 (16 triangles) and let the light orbit. Gouraud also shows **Mach bands**: the eye exaggerates the kinks where the linear color slope changes at triangle edges.
 
 **Why interpolated normals must be re-normalized.** Linearly interpolating two unit vectors produces a vector shorter than 1 between them. The fragment shader must call `normalize(N)` before using it.
 
@@ -99,13 +105,15 @@ In GLSL the only difference between Gouraud and Phong shading is *where* the sam
 
 ```glsl
 // Gouraud: vertex shader
-v_color = shade(world_position, world_normal);         // out vec3 v_color
+v_color = shade(world_position, normalize(world_normal));   // out vec3 v_color
 
 // Phong: vertex shader passes the ingredients ...
 v_position = world_position;  v_normal = world_normal;
 // ... and the fragment shader shades
 outColor = vec4(shade(v_position, normalize(v_normal)), 1.0);
 ```
+
+Every vector in the model must be in the **same space**. TinyGraphics lights in world space: positions go through `model_transform`, normals through the normal matrix (§7.4), and the eye point comes from `camera_transform`. You can light in camera space instead, but then positions, lights and normals all need the view matrix too, and the normal matrix becomes the inverse transpose of $`VM`$. Mixing a camera-space position with a world-space light is a classic bug: the lighting looks almost right and moves when the camera moves.
 
 ## 7.4 Transforming normals
 
@@ -143,7 +151,7 @@ n_y = \sum_i (z_i - z_j)(x_i + x_j), \qquad
 n_z = \sum_i (x_i - x_j)(y_i + y_j).
 ```
 
-The result has length twice the polygon's area and is robust to nearly collinear vertices. For a planar polygon it equals the sum of the cross products of its edges.
+Expanding the products shows that this is exactly $`\sum_i P_i \times P_j`$, the sum of the cross products of consecutive vertex *positions*. For a planar polygon its length is twice the polygon's area. It stays well defined when some vertices are nearly collinear, where a single cross product of two short edges would not.
 
 **Vertex normals for smooth shading** when no analytic surface is available: average the normals of the faces around the vertex. Weighting by face area, which is simply the un-normalized cross product, keeps sliver triangles from dominating. Weighting by the corner angle is even more consistent across different triangulations.
 
@@ -151,7 +159,7 @@ The result has length twice the polygon's area and is robust to nearly collinear
 
 ## Check yourself
 
-1. A surface at the origin has normal $`𝐧 = (0, 0, 1)`$. A white point light is at $`(0, 3, 4)`$ and the viewer at $`(0, -3, 4)`$. With $`k_a = 0.1`$, $`k_d = 0.6`$, $`k_s = 0.3`$, $`\alpha = 10`$, $`I_a = I_l = 1`$ and no attenuation, compute the Phong intensity. Does Blinn–Phong give the same answer here?
+1. A surface at the origin has normal $`𝐧 = (0, 0, 1)`$. A white point light is at $`(0, 3, 4)`$ and the viewer at $`(0, -3, 4)`$. With $`k_a = 0.1`$, $`k_d = 0.6`$, $`k_s = 0.3`$, $`\alpha = 10`$, $`I_a = I_l = 1`$ and no attenuation, compute the Phong intensity. Does Blinn–Phong give the same answer here? Then move the viewer to $`(0, 0, 5)`$ and compute both again, with Blinn–Phong at $`\alpha' = 10`$ and at $`\alpha' = 40`$.
 2. What is the major difference between Gouraud and Phong shading, and when do they look the same?
 3. A sphere is scaled by $`S(1, 4, 1)`$ into a tall ellipsoid. A student transforms its normals with $`M`$ instead of $`(M^{-1})^{𝖳}`$. Near the equator, which way do the wrong normals lean?
 4. Why does the diffuse term not depend on the viewer, while the specular term does?
@@ -159,8 +167,8 @@ The result has length twice the polygon's area and is robust to nearly collinear
 
 <details><summary>Answers</summary>
 
-1. $`𝐥 = (0, 3, 4)/5 = (0, 0.6, 0.8)`$ and $`𝐯 = (0, -0.6, 0.8)`$. $`𝐧\cdot𝐥 = 0.8`$. $`𝐫 = 2(0.8)(0,0,1) - (0, 0.6, 0.8) = (0, -0.6, 0.8) = 𝐯`$, so $`𝐫\cdot𝐯 = 1`$. $`I = 0.1 + 0.6 \cdot 0.8 + 0.3 \cdot 1^{10} = 0.88`$. Blinn: $`𝐡 = \mathrm{normalize}(0, 0, 1.6) = 𝐧`$, so $`𝐧\cdot𝐡 = 1`$ and the intensity is also $`0.88`$. The viewer is exactly in the mirror direction, so both peak.
-2. Gouraud evaluates lighting at vertices and interpolates colors. Phong interpolates normals and evaluates lighting per pixel. They match when lighting varies slowly across each triangle: finely tessellated meshes, no sharp highlights, or purely diffuse materials.
+1. $`𝐥 = (0, 3, 4)/5 = (0, 0.6, 0.8)`$ and $`𝐯 = (0, -0.6, 0.8)`$. $`𝐧\cdot𝐥 = 0.8`$. $`𝐫 = 2(0.8)(0,0,1) - (0, 0.6, 0.8) = (0, -0.6, 0.8) = 𝐯`$, so $`𝐫\cdot𝐯 = 1`$. $`I = 0.1 + 0.6 \cdot 0.8 + 0.3 \cdot 1^{10} = 0.88`$. Blinn: $`𝐡 = \mathrm{normalize}(0, 0, 1.6) = 𝐧`$, so $`𝐧\cdot𝐡 = 1`$ and the intensity is also $`0.88`$. The viewer is exactly in the mirror direction, so both peak. With the viewer at $`(0, 0, 5)`$: $`𝐯 = 𝐧`$, so $`𝐫\cdot𝐯 = 0.8`$ and Phong gives $`I = 0.58 + 0.3 \cdot 0.8^{10} \approx 0.612`$. $`𝐡 = \mathrm{normalize}(0, 0.6, 1.8)`$ and $`𝐧\cdot𝐡 \approx 0.9487`$. Blinn–Phong with $`\alpha' = 10`$ gives $`\approx 0.757`$, a broader, brighter highlight; with $`\alpha' = 40`$ it gives $`\approx 0.616`$, close to Phong. That is the $`\alpha' \approx 4\alpha`$ rule.
+2. Gouraud evaluates lighting at vertices and interpolates colors. Phong interpolates normals and evaluates lighting per pixel. They match when lighting varies slowly across each triangle: finely tessellated meshes and no sharp highlights. On a coarse mesh even a purely diffuse surface differs, most visibly along the shadow edge, where the clamp in $`\max(𝐧\cdot𝐥, 0)`$ bends the result.
 3. $`M`$ stretches $`y`$ by 4. The ellipsoid's true normals near the equator are *flatter* (closer to horizontal) than the sphere's, but multiplying by $`M`$ stretches their $`y`$ component, so the wrong normals lean too far toward $`\pm y`$ (up or down). The correct matrix divides $`y`$ by 4.
 4. An ideal diffuse surface scatters arriving light equally in every direction, so the amount leaving toward any viewer is the same. Specular reflection concentrates light near the mirror direction, so what you see depends on where you stand.
 5. $`n_x = n_y = 0`$ (all $`z = 0`$). $`n_z = (0-1)(0+0) + (1-0)(0+1) + (0-0)(1+0) = 1`$. The normal is $`(0,0,1)`$ and the area is $`1/2`$.

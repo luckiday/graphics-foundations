@@ -40,9 +40,9 @@ x_{\text{pixel}} = \frac{x_{\text{ndc}} + 1}{2} \cdot \text{width}, \qquad
 y_{\text{pixel}} = \frac{y_{\text{ndc}} + 1}{2} \cdot \text{height}
 ```
 
-The NDC $`z`$ becomes the depth used by the depth test.
+The NDC $`z`$ is mapped the same way, to a depth $`(z_{\text{ndc}} + 1)/2`$ in $`[0, 1]`$. That value is what the depth test compares and what `gl_FragCoord.z` reads.
 
-In the fragment shader, `gl_FragCoord.xy` gives the pixel position. It points at the pixel's **center** and the origin is the **bottom-left** corner:
+In the fragment shader, `gl_FragCoord.xy` gives the pixel position. It points at the pixel's **center**, so the bottom-left pixel is $`(0.5, 0.5)`$. The origin is the **bottom-left** corner, and the units are framebuffer pixels, not CSS pixels (on a high-DPI screen there are more of them):
 
 ![gl_FragCoord](../figures/fragcoord.svg)
 
@@ -53,7 +53,7 @@ Demo 01 does all of this in about 60 lines of plain WebGL, with no library:
 ```js
 const gl = canvas.getContext("webgl2");
 
-// 1. Compile and link the two shaders into a program.
+// 1. Compile and link the two shaders into a program (createProgram is a helper in demos/lib/gl.js, not a WebGL call).
 const program = createProgram(gl, vertexSource, fragmentSource);
 
 // 2. Upload vertex data into a buffer: x, y, r, g, b for each of three vertices.
@@ -72,7 +72,7 @@ gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 20, 0);         // 2 floats, 20-by
 gl.enableVertexAttribArray(1);                                // location 1: color
 gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 20, 8);         // 3 floats, offset 8 bytes
 
-// 4. Every frame: clear, select the program, set uniforms, draw.
+// 4. Every frame: clear, select the program, set uniforms with gl.uniform* (none needed here), draw.
 gl.clearColor(1, 1, 1, 1);
 gl.clear(gl.COLOR_BUFFER_BIT);
 gl.useProgram(program);
@@ -94,6 +94,8 @@ GLSL looks like C, with vector and matrix types built in. A WebGL 2 shader must 
 | `mat2`, `mat3`, `mat4` | float matrices, **column-major** (`m[1]` is the second column) |
 | `sampler2D` | a handle to a texture |
 
+**Careful:** TinyGraphics' `Mat4` is stored the other way, as an array of **rows**. The translation's $`x`$ entry is `M[0][3]` in JavaScript but `m[3][0]` in GLSL. The library transposes every matrix on its way to the GPU, so you only need to remember this when you index entries by hand.
+
 The fragment shader must declare a default float precision: `precision mediump float;`. The choices are `lowp`, `mediump` and `highp`.
 
 ### Getting data in and out
@@ -112,7 +114,7 @@ WebGL 1 used GLSL ES 1.00, and older tutorials use its names: `attribute` for a 
 ```glsl
 vec4 c = vec4(1.0, 0.5, 0.25, 1.0);
 float r = c.r;          // same as c.x, c[0]
-vec3 rgb = c.rgb;       // any 1–4 of x y z w / r g b a / s t p q
+vec3 rgb = c.rgb;       // 1–4 letters from ONE set: x y z w, r g b a or s t p q (c.xg is an error)
 vec2 flipped = c.yx;    // reorder freely ("swizzling")
 vec4 grey = vec4(vec3(0.5), 1.0);    // constructors take vectors and scalars
 mat3 m3 = mat3(someMat4);            // upper-left 3×3
@@ -169,7 +171,7 @@ Open [demo 01](https://luckiday.github.io/graphics-foundations/demos/01-hello-tr
 ## Check yourself
 
 1. What is the difference between OpenGL, WebGL and GLSL?
-2. A triangle's three vertices are colored red, green and blue. Which stage decides the color of a pixel at its center, and what color is it?
+2. A triangle's three vertices are colored red, green and blue. Which stage decides the color of a pixel at the triangle's centroid, and what color is it? (The triangle is flat on screen, with $`w = 1`$ at every vertex.)
 3. Why can a vertex shader not decide the color of an individual pixel?
 4. A point has clip coordinates $`(2, -1, 0.5, 4)`$. What are its normalized device coordinates, and is it inside the view volume?
 
@@ -178,7 +180,7 @@ Open [demo 01](https://luckiday.github.io/graphics-foundations/demos/01-hello-tr
 1. OpenGL is a C API for GPU rendering on desktops. WebGL is a JavaScript binding of OpenGL ES (the embedded subset) for browsers. GLSL is the shading language whose programs run *on the GPU* under both.
 2. The rasterizer interpolates the three colors to that pixel, and the fragment shader outputs the result. At the centroid, the barycentric weights are $`(\tfrac13, \tfrac13, \tfrac13)`$, so the color is $`(\tfrac13, \tfrac13, \tfrac13)`$, a dark grey.
 3. The vertex shader runs once per vertex, before the GPU knows which pixels a triangle covers. Per-pixel decisions can only happen after rasterization, in the fragment shader.
-4. Divide by $`w = 4`$ to get $`(0.5, -0.25, 0.125)`$. All three components lie in $`[-1, 1]`$, so the point is inside.
+4. Divide by $`w = 4`$ to get $`(0.5, -0.25, 0.125)`$. All three components lie in $`[-1, 1]`$, so the point is inside. The GPU actually makes this test before dividing, as $`-w \le x, y, z \le w`$ (here $`-4 \le 2, -1, 0.5 \le 4`$), which also rejects points behind the camera.
 
 </details>
 

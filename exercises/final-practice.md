@@ -136,12 +136,12 @@ A ray starts at the origin and passes through $`(1, 2, 2)`$. The triangle has ve
 
 ### 10. The ray tree
 
-(a) An eye ray hits a surface with local color $`P = (0.0, 0.1, 0.1)`$, reflectance $`k_r = 0.4`$ and transmittance $`k_t = 0.1`$. Its reflected ray returns $`R = (0.1, 0.1, 0.1)`$ and its transmitted ray returns $`T = (0.2, 0.0, 0.1)`$. What color is the pixel?
-(b) With 3 lights and depth 4, where every hit spawns a reflected and a transmitted ray, how many rays can one pixel need?
+(a) An eye ray hits a surface with local color $`P = (0.0, 0.1, 0.1)`$, reflectance $`k_r = 0.4`$ and transmittance $`k_t = 0.1`$. Its reflected ray hits a mirror with local color $`(0.05, 0.05, 0.05)`$ and $`k_r = 0.5`$, whose own reflected ray returns the background $`(0.1, 0.1, 0.1)`$. Its transmitted ray returns $`T = (0.2, 0.0, 0.1)`$. What color is the pixel?
+(b) With 3 lights and a ray tree 4 levels deep (the eye ray's hit is level 1), where every hit spawns a reflected and a transmitted ray, how many rays can one pixel need?
 
 <details><summary>Solution</summary>
 
-(a) $`P + k_r R + k_t T = (0 + 0.04 + 0.02,\ 0.1 + 0.04 + 0,\ 0.1 + 0.04 + 0.01) = (0.06, 0.14, 0.15)`$.
+(a) Evaluate bottom up. First the mirror: $`R = (0.05, 0.05, 0.05) + 0.5\,(0.1, 0.1, 0.1) = (0.1, 0.1, 0.1)`$. Then the pixel: $`P + k_r R + k_t T = (0 + 0.04 + 0.02,\ 0.1 + 0.04 + 0,\ 0.1 + 0.04 + 0.01) = (0.06, 0.14, 0.15)`$.
 
 (b) $`(m + 1)(2^n - 1) = 4 \times 15 = 60`$ rays: 15 rays that hit surfaces and 45 shadow rays.
 
@@ -162,13 +162,13 @@ The test is $`\mathrm{normalize}(P - P_s)\cdot𝐃 \ge \cos\, 30° = 0.866`$.
 
 ### 12. Refraction
 
-Light passes from air ($`\eta = 1`$) into water ($`\eta = 1.33`$) at $`45°`$ from the normal. Find the refraction angle. Can total internal reflection happen on this side of the boundary?
+Light passes from air ($`\eta_1 = 1`$) into water ($`\eta_2 = 1.33`$) at $`45°`$ from the normal. Find the refraction angle. Can total internal reflection happen on this side of the boundary?
 
 <details><summary>Solution</summary>
 
 $`\sin\, \theta_t = \sin\, 45° / 1.33 = 0.5317`$, so $`\theta_t = 32.1176°`$: the ray bends toward the normal.
 
-Total internal reflection cannot happen here, because $`\sin\, \theta_t`$ is at most $`1/1.33 \lt 1`$. It is only possible when light goes from the denser medium into the less dense one.
+Total internal reflection cannot happen here, because $`\sin\, \theta_t`$ is at most $`1/1.33 \lt 1`$. It is only possible when light goes from the medium of higher index into the one of lower index.
 
 </details>
 
@@ -182,7 +182,26 @@ Each floor fragment compares its own depth from the light against the shadow map
 
 Remedies:
 - subtract a small, slope-scaled **depth bias** before comparing;
-- render **back faces** into the shadow map;
+- render **back faces** into the shadow map (this works for closed objects; a single-sided floor still needs the bias);
 - increase shadow-map resolution, or tighten the light's frustum around the scene.
+
+</details>
+
+### 14. Generating a primary ray
+
+A camera at the origin has the basis $`𝐮 = (1, 0, 0)`$, $`𝐯 = (0, 1, 0)`$, $`𝐧 = (0, 0, 1)`$. The image is 8 × 4 pixels, with a vertical field of view of $`90°`$.
+(a) Find the unit direction of the ray through pixel $`(i, j) = (5, 1)`$, where $`j = 0`$ is the top row.
+(b) Does the ray hit the sphere of radius 0.5 centered at $`(1.5, 0.5, -2)`$? If so, give $`t`$, the hit point and the unit normal.
+
+<details><summary>Solution</summary>
+
+(a) The aspect ratio is $`a = 8/4 = 2`$ and $`\tan\, 45° = 1`$ (chapter 11, §11.2).
+- $`x = \left(\frac{2(5 + 0.5)}{8} - 1\right)\cdot 2 \cdot 1 = 0.75`$ and $`y = \left(1 - \frac{2(1 + 0.5)}{4}\right)\cdot 1 = 0.25`$.
+- $`𝐝 = \mathrm{normalize}(0.75, 0.25, -1) = (0.5883, 0.1961, -0.7845)`$.
+
+(b) $`𝐦 = 𝐨 - 𝐜 = (-1.5, -0.5, 2)`$, so $`b = 𝐦\cdot𝐝 = -2.5495`$ and $`c = 𝐦\cdot𝐦 - R^2 = 6.5 - 0.25 = 6.25`$.
+- The discriminant is $`b^2 - c = 6.5 - 6.25 = 0.25`$, so $`t = 2.5495 \pm 0.5`$: $`2.0495`$ or $`3.0495`$.
+- The visible hit is at $`t = 2.0495`$: $`𝐩 = (1.2058, 0.4019, -1.6078)`$, with normal $`(𝐩 - 𝐜)/0.5 = (-0.5883, -0.1961, 0.7845)`$.
+- The normal is exactly $`-𝐝`$, because the ray passes through the sphere's center: $`(1.5, 0.5, -2) = 2\,(0.75, 0.25, -1)`$.
 
 </details>

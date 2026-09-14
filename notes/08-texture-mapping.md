@@ -33,9 +33,9 @@ Assigning $`(u, v)`$ is called **parameterization**. A few standard mappings:
 
 | Mapping | $`(u, v)`$ for a point $`(x, y, z)`$ | Good for | Artifact |
 |---|---|---|---|
-| planar | $`(x, y)`$, scaled | floors, walls, decals | stretching on faces parallel to the projection |
+| planar | $`(x, y)`$, scaled | floors, walls, decals | streaks on faces parallel to the projection direction (for $`(x, y)`$: faces whose normal is perpendicular to $`z`$) |
 | cylindrical | $`\left(\frac{\mathrm{atan2}(z, x)}{2\pi} + \frac12,\ \ y\right)`$ | cans, trunks, columns | a seam where $`u`$ wraps from 1 to 0 |
-| spherical | $`\left(\frac{\mathrm{atan2}(z, x)}{2\pi} + \frac12,\ \ \frac{\arcsin\, y}{\pi} + \frac12\right)`$ | planets, skies | pinching at the poles |
+| spherical | $`\left(\frac{\mathrm{atan2}(z, x)}{2\pi} + \frac12,\ \ \frac{\arcsin\, y}{\pi} + \frac12\right)`$, with $`(x, y, z)`$ scaled to unit length | planets, skies | pinching at the poles |
 | per-face | each face gets the whole $`[0,1]^2`$ | cubes, boxes | none, but requires split vertices |
 | authored (UV unwrapping) | chosen by an artist in Blender, Maya, … | characters, props | none if done well |
 
@@ -60,6 +60,8 @@ A floor seen at a glancing angle is minified much more along one screen axis tha
 
 Try all three filters in demo 05, and tilt the camera toward the horizon.
 
+In TinyGraphics, `new Texture("file.png")` defaults to `min_filter: "LINEAR_MIPMAP_LINEAR"`, `mag_filter: "LINEAR"` and `wrap: "REPEAT"`. Passing a string, as in `new Texture("file.png", "NEAREST")`, changes only the minification filter. Mipmap filters are valid only for minification, because magnifying never needs a smaller level. WebGL 2 builds mipmaps for, and repeats, images of any size; WebGL 1 required power-of-two dimensions.
+
 ## 8.4 Perspective-correct interpolation
 
 The rasterizer works in **screen space**. Linearly interpolating $`(u, v)`$ between a triangle's projected vertices is wrong under perspective.
@@ -82,7 +84,7 @@ Lighting depends on the **normal**, not on the actual geometry. Change the norma
 
 **Bump mapping** stores a grayscale **height** $`h(u, v)`$. The shader perturbs the normal using the height's slope, $`\partial h / \partial u`$ and $`\partial h / \partial v`$, along the surface's tangent directions. The geometry is unchanged: silhouettes stay perfectly straight and bumps cast no shadows.
 
-**Normal mapping** stores the perturbed normal directly, as RGB in **tangent space**: a frame made of the surface's tangent $`𝐓`$, bitangent $`𝐁`$ and normal $`𝐍`$ at each point. The shader rotates the stored normal into world space with the $`3\times3`$ matrix $`[𝐓\ 𝐁\ 𝐍]`$. It is the standard technique in games. Normal maps are usually "baked" from a high-polygon sculpt onto a low-polygon model.
+**Normal mapping** stores the perturbed normal directly, as RGB in **tangent space**: a frame made of the surface's tangent $`𝐓`$, bitangent $`𝐁`$ and normal $`𝐍`$ at each point. The shader rotates the stored normal into world space with the $`3\times3`$ matrix $`[𝐓\ 𝐁\ 𝐍]`$. A color channel holds $`[0, 1]`$, so decode it first: $`𝐧_{\text{tangent}} = 2\,\mathrm{rgb} - 1`$. A flat texel is stored as $`(0.5, 0.5, 1)`$, the light blue that normal maps are known for. Forgetting the decode tilts every normal toward $`(1, 1, 1)`$. It is the standard technique in games. Normal maps are usually "baked" from a high-polygon sculpt onto a low-polygon model.
 
 **Displacement mapping** actually moves the vertices along their normals by $`h(u, v)`$. It needs dense geometry, from pre-tessellation or a tessellation shader, but it changes silhouettes and occlusion correctly.
 
@@ -90,11 +92,11 @@ Lighting depends on the **normal**, not on the actual geometry. Change the norma
 
 | | changes normals | changes silhouette | cost |
 |---|---|---|---|
-| bump / normal map | yes | no | one extra texture lookup |
+| bump / normal map | yes | no | one lookup (normal map), or three (height differences) |
 | parallax map | yes, plus shifted lookup | no | a few lookups |
 | displacement map | yes (recomputed) | **yes** | many more vertices |
 
-TinyGraphics' `Fake_Bump_Map` shader simply adds the texture color to the normal. It ignores tangent space, so the effect is only roughly right. Implementing proper tangent-space normal mapping is a good exercise.
+TinyGraphics' `Fake_Bump_Map` shader adds the texture color, shifted by $`-0.5`$ so it can tilt both ways, straight to the world-space normal. It ignores tangent space, so the effect is only roughly right. Implementing proper tangent-space normal mapping is a good exercise.
 
 ## 8.6 Environment mapping
 
@@ -108,7 +110,7 @@ A mirror-like object reflects its surroundings. **Environment mapping** approxim
    (a) Textures are applied in the vertex processing stage.
    (b) Texture coordinates are usually assigned at vertices and interpolated across each triangle.
    (c) Bump mapping fixes the stretching that appears when a planar wood texture is applied to a curved object.
-2. A 1024 × 1024 texture covers a quad that is 64 pixels wide on screen. Roughly which mipmap level is used? (Level 0 is full size.)
+2. A 1024 × 1024 texture covers a square quad that faces the camera and is 64 × 64 pixels on screen. Roughly which mipmap level is used? (Level 0 is full size.)
 3. A triangle's vertices have $`u = 0`$ and $`u = 1`$, at clip-space $`w = 1`$ and $`w = 3`$. What is $`u`$ at the screen-space midpoint of that edge, with and without perspective correction?
 4. Why must a cylinder's texture seam use duplicated vertices?
 5. Why does a normal-mapped brick wall look wrong when you look along it at a glancing angle, while a displacement-mapped one does not?
