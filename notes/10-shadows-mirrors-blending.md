@@ -46,10 +46,10 @@ color = ambient + (in_shadow ? 0 : diffuse + specular)
 A flat mirror shows the scene as seen by a camera **reflected through the mirror plane**. Chapter 4's reflection matrix gives that camera directly:
 
 ```math
-V_{\text{mirror}} = V\, F, \qquad F = T(\mathbf{p}_0)\,\left(I - 2\hat{\mathbf{n}}\hat{\mathbf{n}}^\mathsf{T}\right)T(-\mathbf{p}_0),
+V_{\text{mirror}} = V\, F, \qquad F = T(𝐩_0)\,\left(I - 2\hat{𝐧}\hat{𝐧}^{𝖳}\right)T(-𝐩_0),
 ```
 
-for a mirror plane through $`\mathbf{p}_0`$ with unit normal $`\hat{\mathbf{n}}`$.
+for a mirror plane through $`𝐩_0`$ with unit normal $`\hat{𝐧}`$.
 
 1. Render the scene with $`V_{\text{mirror}}`$ into a texture. A reflection reverses winding order, so flip the culled face. Clip away everything behind the mirror plane, or objects behind the mirror appear in it.
 2. Draw the mirror surface and texture it with that image, using the projected screen position as texture coordinates.

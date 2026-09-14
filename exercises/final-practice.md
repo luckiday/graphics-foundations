@@ -6,16 +6,16 @@ Covers chapters 7–11. Try each problem before opening its solution. Every nume
 
 ### 1. Phong versus Blinn–Phong
 
-A surface point at the origin has normal $`\mathbf{n} = (0, 1, 0)`$. A white light is at $`(3, 4, 0)`$ and the viewer is at $`(0, 5, 0)`$. With $`k_a = 0.2`$, $`k_d = 0.5`$, $`k_s = 0.5`$, shininess $`4`$, $`I_a = I_l = 1`$ and no attenuation, compute the intensity with the Phong model and with Blinn–Phong.
+A surface point at the origin has normal $`𝐧 = (0, 1, 0)`$. A white light is at $`(3, 4, 0)`$ and the viewer is at $`(0, 5, 0)`$. With $`k_a = 0.2`$, $`k_d = 0.5`$, $`k_s = 0.5`$, shininess $`4`$, $`I_a = I_l = 1`$ and no attenuation, compute the intensity with the Phong model and with Blinn–Phong.
 
 <details><summary>Solution</summary>
 
-$`\mathbf{l} = (3, 4, 0)/5 = (0.6, 0.8, 0)`$, $`\mathbf{v} = (0, 1, 0)`$ and $`\mathbf{n}\cdot\mathbf{l} = 0.8`$.
+$`𝐥 = (3, 4, 0)/5 = (0.6, 0.8, 0)`$, $`𝐯 = (0, 1, 0)`$ and $`𝐧\cdot𝐥 = 0.8`$.
 
-**Phong:** $`\mathbf{r} = 2(0.8)(0, 1, 0) - (0.6, 0.8, 0) = (-0.6, 0.8, 0)`$, so $`\mathbf{r}\cdot\mathbf{v} = 0.8`$ and $`0.8^4 = 0.4096`$.
+**Phong:** $`𝐫 = 2(0.8)(0, 1, 0) - (0.6, 0.8, 0) = (-0.6, 0.8, 0)`$, so $`𝐫\cdot𝐯 = 0.8`$ and $`0.8^4 = 0.4096`$.
 $`I = 0.2 + 0.5 \cdot 0.8 + 0.5 \cdot 0.4096 = 0.8048`$.
 
-**Blinn–Phong:** $`\mathbf{h} = \operatorname{normalize}(0.6, 1.8, 0) = (0.3162, 0.9487, 0)`$, so $`\mathbf{n}\cdot\mathbf{h} = 0.9487`$ and $`0.9487^4 = 0.81`$.
+**Blinn–Phong:** $`𝐡 = \mathrm{normalize}(0.6, 1.8, 0) = (0.3162, 0.9487, 0)`$, so $`𝐧\cdot𝐡 = 0.9487`$ and $`0.9487^4 = 0.81`$.
 $`I = 0.2 + 0.5 \cdot 0.8 + 0.5 \cdot 0.81 = 1.005`$, which clamps to $`1`$ on display.
 
 With the same exponent, Blinn–Phong's highlight is broader, so this viewer, who is off the mirror direction, sees more of it.
@@ -42,7 +42,7 @@ A surface through the origin has normal $`(1, 1, 0)/\sqrt2`$ and contains the ta
 
 <details><summary>Solution</summary>
 
-$`G = (S^{-1})^\mathsf{T} = S(\tfrac12, 1, 1)`$. $`G(1, 1, 0) = (0.5, 1, 0)`$, which normalizes to $`(0.4472, 0.8944, 0)`$.
+$`G = (S^{-1})^{𝖳} = S(\tfrac12, 1, 1)`$. $`G(1, 1, 0) = (0.5, 1, 0)`$, which normalizes to $`(0.4472, 0.8944, 0)`$.
 
 The tangent transforms to $`S(1, -1, 0) = (2, -1, 0)`$, and $`(0.5, 1, 0)\cdot(2, -1, 0) = 1 - 1 = 0`$. ✓
 
@@ -108,11 +108,11 @@ A ray starts at $`(1, -5, 0)`$ with direction $`(0, 1, 0)`$. A sphere of radius 
 
 <details><summary>Solution</summary>
 
-$`\mathbf{m} = (1, -5, 0)`$, $`b = \mathbf{m}\cdot\mathbf{d} = -5`$, $`c = \mathbf{m}\cdot\mathbf{m} - 4 = 22`$. The discriminant is $`b^2 - c = 3`$.
+$`𝐦 = (1, -5, 0)`$, $`b = 𝐦\cdot𝐝 = -5`$, $`c = 𝐦\cdot𝐦 - 4 = 22`$. The discriminant is $`b^2 - c = 3`$.
 
 $`t = 5 \pm \sqrt3`$, so $`t = 3.2679`$ and $`t = 6.7321`$.
 
-The visible hit is at $`t = 3.2679`$, the point $`(1, -1.7321, 0)`$, with normal $`\mathbf{p}/2 = (0.5, -0.866, 0)`$.
+The visible hit is at $`t = 3.2679`$, the point $`(1, -1.7321, 0)`$, with normal $`𝐩/2 = (0.5, -0.866, 0)`$.
 
 </details>
 
@@ -127,10 +127,10 @@ A ray starts at the origin and passes through $`(1, 2, 2)`$. The triangle has ve
 
 <details><summary>Solution</summary>
 
-(a) $`\mathbf{r}(t) = t\,(1, 2, 2)`$.
+(a) $`𝐫(t) = t\,(1, 2, 2)`$.
 (b) All three intercepts are 6, so the plane is $`x + y + z = 6`$, with normal $`(1, 1, 1)`$.
-(c) $`t + 2t + 2t = 6`$, so $`t = 1.2`$ and the hit point is $`\mathbf{p} = (1.2, 2.4, 2.4)`$.
-(d) Compute barycentric coordinates. Each vertex has a single nonzero coordinate equal to 6, so $`\alpha = 1.2/6 = 0.2`$, $`\beta = 2.4/6 = 0.4`$ and $`\gamma = 2.4/6 = 0.4`$. They sum to 1 and are all non-negative, so the hit is **inside**. Equivalently, $`\mathbf{p}`$ lies on the inner side of all three edges.
+(c) $`t + 2t + 2t = 6`$, so $`t = 1.2`$ and the hit point is $`𝐩 = (1.2, 2.4, 2.4)`$.
+(d) Compute barycentric coordinates. Each vertex has a single nonzero coordinate equal to 6, so $`\alpha = 1.2/6 = 0.2`$, $`\beta = 2.4/6 = 0.4`$ and $`\gamma = 2.4/6 = 0.4`$. They sum to 1 and are all non-negative, so the hit is **inside**. Equivalently, $`𝐩`$ lies on the inner side of all three edges.
 
 </details>
 
@@ -153,9 +153,9 @@ A spotlight at $`(0, 4, 0)`$ points along $`(0, -1, 0)`$ with a $`30°`$ cutoff.
 
 <details><summary>Solution</summary>
 
-The test is $`\operatorname{normalize}(P - P_s)\cdot\mathbf{D} \ge \cos 30° = 0.866`$.
+The test is $`\mathrm{normalize}(P - P_s)\cdot𝐃 \ge \cos\, 30° = 0.866`$.
 
-- $`(1, 0, 0)`$: the direction is $`\operatorname{normalize}(1, -4, 0)`$, which has dot product $`0.9701`$ with $`\mathbf{D}`$. That is $`\ge 0.866`$, so it is **lit**.
+- $`(1, 0, 0)`$: the direction is $`\mathrm{normalize}(1, -4, 0)`$, which has dot product $`0.9701`$ with $`𝐃`$. That is $`\ge 0.866`$, so it is **lit**.
 - $`(3, 0, 0)`$: the direction is $`(3, -4, 0)/5`$, which has dot product $`0.8`$. That is $`\lt 0.866`$, so it is **dark**.
 
 </details>
@@ -166,9 +166,9 @@ Light passes from air ($`\eta = 1`$) into water ($`\eta = 1.33`$) at $`45°`$ fr
 
 <details><summary>Solution</summary>
 
-$`\sin\theta_t = \sin 45° / 1.33 = 0.5317`$, so $`\theta_t = 32.1176°`$: the ray bends toward the normal.
+$`\sin\, \theta_t = \sin\, 45° / 1.33 = 0.5317`$, so $`\theta_t = 32.1176°`$: the ray bends toward the normal.
 
-Total internal reflection cannot happen here, because $`\sin\theta_t`$ is at most $`1/1.33 \lt 1`$. It is only possible when light goes from the denser medium into the less dense one.
+Total internal reflection cannot happen here, because $`\sin\, \theta_t`$ is at most $`1/1.33 \lt 1`$. It is only possible when light goes from the denser medium into the less dense one.
 
 </details>
 

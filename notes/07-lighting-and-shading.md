@@ -23,18 +23,18 @@ At surface point $`P`$, with every vector normalized:
 
 | Vector | Points |
 |---|---|
-| $`\mathbf{n}`$ | along the surface normal |
-| $`\mathbf{l}`$ | from $`P`$ toward the light |
-| $`\mathbf{v}`$ | from $`P`$ toward the viewer |
-| $`\mathbf{r}`$ | along the mirror reflection of $`\mathbf{l}`$: $`\ \mathbf{r} = 2(\mathbf{n}\cdot\mathbf{l})\,\mathbf{n} - \mathbf{l}`$ |
+| $`𝐧`$ | along the surface normal |
+| $`𝐥`$ | from $`P`$ toward the light |
+| $`𝐯`$ | from $`P`$ toward the viewer |
+| $`𝐫`$ | along the mirror reflection of $`𝐥`$: $`\ 𝐫 = 2(𝐧\cdot𝐥)\,𝐧 - 𝐥`$ |
 
 The model adds three terms:
 
 ```math
 I = \underbrace{k_a\, I_a}_{\text{ambient}}
 + \sum_{\text{lights}} f_{\text{att}} \left(
-\underbrace{k_d\, I_l \max(\mathbf{n}\cdot\mathbf{l},\, 0)}_{\text{diffuse}}
-+ \underbrace{k_s\, I_l \max(\mathbf{r}\cdot\mathbf{v},\, 0)^{\alpha}}_{\text{specular}}
+\underbrace{k_d\, I_l \max(𝐧\cdot𝐥,\, 0)}_{\text{diffuse}}
++ \underbrace{k_s\, I_l \max(𝐫\cdot𝐯,\, 0)^{\alpha}}_{\text{specular}}
 \right)
 ```
 
@@ -42,30 +42,30 @@ Each term is evaluated for red, green and blue separately.
 
 **Ambient.** A constant standing in for light that has bounced around the scene. Without it, surfaces facing away from every light would be pure black. It is a crude approximation of global illumination.
 
-**Diffuse (Lambertian).** A matte surface scatters light equally in all directions. What varies is how much light *arrives*. A beam of fixed width spreads over a larger area when it hits the surface at a slant, by a factor of $`1/\cos\theta`$, so the irradiance falls off as $`\cos\theta = \mathbf{n}\cdot\mathbf{l}`$ (Lambert's cosine law). The diffuse term does not depend on the viewer at all. The $`\max(\cdot, 0)`$ stops surfaces facing away from the light from getting negative light.
+**Diffuse (Lambertian).** A matte surface scatters light equally in all directions. What varies is how much light *arrives*. A beam of fixed width spreads over a larger area when it hits the surface at a slant, by a factor of $`1/\cos\, \theta`$, so the irradiance falls off as $`\cos\, \theta = 𝐧\cdot𝐥`$ (Lambert's cosine law). The diffuse term does not depend on the viewer at all. The $`\max(\cdot, 0)`$ stops surfaces facing away from the light from getting negative light.
 
-**Specular.** Shiny surfaces reflect most strongly near the mirror direction $`\mathbf{r}`$. The exponent $`\alpha`$, called shininess, controls how quickly the highlight falls off. Low values (5–10) give broad, dull highlights like plastic; high values (100–1000) give small, sharp ones like polished metal. The specular color is usually the *light's* color, not the surface's. That is why highlights on colored plastic look white.
+**Specular.** Shiny surfaces reflect most strongly near the mirror direction $`𝐫`$. The exponent $`\alpha`$, called shininess, controls how quickly the highlight falls off. Low values (5–10) give broad, dull highlights like plastic; high values (100–1000) give small, sharp ones like polished metal. The specular color is usually the *light's* color, not the surface's. That is why highlights on colored plastic look white.
 
 The Phong model is **empirical**: it looks plausible and is cheap, but it is not derived from physics and does not conserve energy. Modern renderers use physically based models (microfacet BRDFs). They have the same structure, diffuse plus a view-dependent lobe, with better-founded terms.
 
 ### Blinn–Phong
 
-Instead of $`\mathbf{r}\cdot\mathbf{v}`$, Blinn uses the **halfway vector**
+Instead of $`𝐫\cdot𝐯`$, Blinn uses the **halfway vector**
 
 ```math
-\mathbf{h} = \frac{\mathbf{l} + \mathbf{v}}{\lVert \mathbf{l} + \mathbf{v} \rVert},
-\qquad \text{specular} = k_s\, I_l \max(\mathbf{n}\cdot\mathbf{h},\, 0)^{\alpha'}.
+𝐡 = \frac{𝐥 + 𝐯}{\lVert 𝐥 + 𝐯 \rVert},
+\qquad \text{specular} = k_s\, I_l \max(𝐧\cdot𝐡,\, 0)^{\alpha'}.
 ```
 
-When the viewer sits exactly in the mirror direction, $`\mathbf{h} = \mathbf{n}`$ and both variants peak. Blinn–Phong's highlight is broader for the same exponent. Roughly, $`\alpha' \approx 4\alpha`$ gives a similar look. It behaves better at grazing angles, and it is what most real-time code uses, including TinyGraphics' `Phong_Shader`.
+When the viewer sits exactly in the mirror direction, $`𝐡 = 𝐧`$ and both variants peak. Blinn–Phong's highlight is broader for the same exponent. Roughly, $`\alpha' \approx 4\alpha`$ gives a similar look. It behaves better at grazing angles, and it is what most real-time code uses, including TinyGraphics' `Phong_Shader`.
 
 ### Light sources
 
-| Type | Represented as | $`\mathbf{l}`$ at point $`P`$ | Attenuation |
+| Type | Represented as | $`𝐥`$ at point $`P`$ | Attenuation |
 |---|---|---|---|
 | directional (the sun) | direction, $`w = 0`$ | constant | none |
-| point | position $`L`$, $`w = 1`$ | $`\operatorname{normalize}(L - P)`$ | yes |
-| spot | position, axis $`\mathbf{D}`$, cutoff angle | as a point light, but zero outside the cone | yes |
+| point | position $`L`$, $`w = 1`$ | $`\mathrm{normalize}(L - P)`$ | yes |
+| spot | position, axis $`𝐃`$, cutoff angle | as a point light, but zero outside the cone | yes |
 
 **Attenuation.** Physically, light from a point source falls off as $`1/d^2`$. In practice a softer
 $`f_{\text{att}} = \dfrac{1}{k_c + k_l d + k_q d^2}`$
@@ -76,7 +76,7 @@ gives artists control and avoids the singularity at $`d = 0`$.
 ![Spotlight](../figures/spotlight.svg)
 
 ```math
-\operatorname{normalize}(P - P_s) \cdot \mathbf{D} \ \ge\ \cos\alpha.
+\mathrm{normalize}(P - P_s) \cdot 𝐃 \ \ge\ \cos\, \alpha.
 ```
 
 Comparing cosines avoids an `acos`. For a soft edge, fade between an inner and an outer cutoff with `smoothstep`.
@@ -111,21 +111,21 @@ outColor = vec4(shade(v_position, normalize(v_normal)), 1.0);
 
 A model matrix $`M`$ moves positions and tangent vectors correctly. It does **not** move normals correctly when it contains a non-uniform scale.
 
-**Derivation.** A tangent $`\mathbf{t}`$ lies in the surface, so $`\mathbf{n}^\mathsf{T}\mathbf{t} = 0`$. After transformation, the tangent becomes $`M\mathbf{t}`$. We want a matrix $`G`$ such that the new normal $`G\mathbf{n}`$ is still perpendicular to it:
+**Derivation.** A tangent $`𝐭`$ lies in the surface, so $`𝐧^{𝖳}𝐭 = 0`$. After transformation, the tangent becomes $`M𝐭`$. We want a matrix $`G`$ such that the new normal $`G𝐧`$ is still perpendicular to it:
 
 ```math
-(G\mathbf{n})^\mathsf{T}(M\mathbf{t}) = \mathbf{n}^\mathsf{T}\, G^\mathsf{T} M\, \mathbf{t} = 0 \quad\text{for every tangent } \mathbf{t}.
+(G𝐧)^{𝖳}(M𝐭) = 𝐧^{𝖳}\, G^{𝖳} M\, 𝐭 = 0 \quad\text{for every tangent } 𝐭.
 ```
 
-This holds whenever $`G^\mathsf{T} M = I`$, that is, when
+This holds whenever $`G^{𝖳} M = I`$, that is, when
 
 ```math
-\boxed{\,G = \left(M^{-1}\right)^\mathsf{T}\,}
+G = \left(M^{-1}\right)^{𝖳}
 ```
 
 the **inverse transpose** of the upper-left $`3\times3`$ of $`M`$. Translation does not affect directions, which is why only that block is used.
 
-- For a rotation, $`(R^{-1})^\mathsf{T} = R`$: normals rotate like everything else.
+- For a rotation, $`(R^{-1})^{𝖳} = R`$: normals rotate like everything else.
 - For a uniform scale $`sI`$, $`G = \tfrac1s I`$: the direction is unchanged, only the length, and you normalize anyway.
 - For a non-uniform scale such as $`S(2, 1, 1)`$, $`G = S(\tfrac12, 1, 1)`$. Stretching a sphere into an ellipsoid along $`x`$ makes its surfaces *less* steep in $`x`$, so the normals tilt away from $`x`$.
 
@@ -133,7 +133,7 @@ TinyGraphics computes this as `Mat4.normal_matrix(model)` and sends it to shader
 
 ## 7.5 Computing normals for a mesh
 
-**Face normal** of a triangle $`ABC`$: $`\operatorname{normalize}\big((B - A) \times (C - A)\big)`$.
+**Face normal** of a triangle $`ABC`$: $`\mathrm{normalize}\big((B - A) \times (C - A)\big)`$.
 
 **Newell's method** for a polygon with vertices $`P_0, \dots, P_{k-1}`$, which may be slightly non-planar. Let $`j = i + 1 \bmod k`$:
 
@@ -151,15 +151,15 @@ The result has length twice the polygon's area and is robust to nearly collinear
 
 ## Check yourself
 
-1. A surface at the origin has normal $`\mathbf{n} = (0, 0, 1)`$. A white point light is at $`(0, 3, 4)`$ and the viewer at $`(0, -3, 4)`$. With $`k_a = 0.1`$, $`k_d = 0.6`$, $`k_s = 0.3`$, $`\alpha = 10`$, $`I_a = I_l = 1`$ and no attenuation, compute the Phong intensity. Does Blinn–Phong give the same answer here?
+1. A surface at the origin has normal $`𝐧 = (0, 0, 1)`$. A white point light is at $`(0, 3, 4)`$ and the viewer at $`(0, -3, 4)`$. With $`k_a = 0.1`$, $`k_d = 0.6`$, $`k_s = 0.3`$, $`\alpha = 10`$, $`I_a = I_l = 1`$ and no attenuation, compute the Phong intensity. Does Blinn–Phong give the same answer here?
 2. What is the major difference between Gouraud and Phong shading, and when do they look the same?
-3. A sphere is scaled by $`S(1, 4, 1)`$ into a tall ellipsoid. A student transforms its normals with $`M`$ instead of $`(M^{-1})^\mathsf{T}`$. Near the equator, which way do the wrong normals lean?
+3. A sphere is scaled by $`S(1, 4, 1)`$ into a tall ellipsoid. A student transforms its normals with $`M`$ instead of $`(M^{-1})^{𝖳}`$. Near the equator, which way do the wrong normals lean?
 4. Why does the diffuse term not depend on the viewer, while the specular term does?
 5. Use Newell's method on the triangle $`(0,0,0)`$, $`(1,0,0)`$, $`(0,1,0)`$. What is its normal, and what is the triangle's area?
 
 <details><summary>Answers</summary>
 
-1. $`\mathbf{l} = (0, 3, 4)/5 = (0, 0.6, 0.8)`$ and $`\mathbf{v} = (0, -0.6, 0.8)`$. $`\mathbf{n}\cdot\mathbf{l} = 0.8`$. $`\mathbf{r} = 2(0.8)(0,0,1) - (0, 0.6, 0.8) = (0, -0.6, 0.8) = \mathbf{v}`$, so $`\mathbf{r}\cdot\mathbf{v} = 1`$. $`I = 0.1 + 0.6 \cdot 0.8 + 0.3 \cdot 1^{10} = 0.88`$. Blinn: $`\mathbf{h} = \operatorname{normalize}(0, 0, 1.6) = \mathbf{n}`$, so $`\mathbf{n}\cdot\mathbf{h} = 1`$ and the intensity is also $`0.88`$. The viewer is exactly in the mirror direction, so both peak.
+1. $`𝐥 = (0, 3, 4)/5 = (0, 0.6, 0.8)`$ and $`𝐯 = (0, -0.6, 0.8)`$. $`𝐧\cdot𝐥 = 0.8`$. $`𝐫 = 2(0.8)(0,0,1) - (0, 0.6, 0.8) = (0, -0.6, 0.8) = 𝐯`$, so $`𝐫\cdot𝐯 = 1`$. $`I = 0.1 + 0.6 \cdot 0.8 + 0.3 \cdot 1^{10} = 0.88`$. Blinn: $`𝐡 = \mathrm{normalize}(0, 0, 1.6) = 𝐧`$, so $`𝐧\cdot𝐡 = 1`$ and the intensity is also $`0.88`$. The viewer is exactly in the mirror direction, so both peak.
 2. Gouraud evaluates lighting at vertices and interpolates colors. Phong interpolates normals and evaluates lighting per pixel. They match when lighting varies slowly across each triangle: finely tessellated meshes, no sharp highlights, or purely diffuse materials.
 3. $`M`$ stretches $`y`$ by 4. The ellipsoid's true normals near the equator are *flatter* (closer to horizontal) than the sphere's, but multiplying by $`M`$ stretches their $`y`$ component, so the wrong normals lean too far toward $`\pm y`$ (up or down). The correct matrix divides $`y`$ by 4.
 4. An ideal diffuse surface scatters arriving light equally in every direction, so the amount leaving toward any viewer is the same. Specular reflection concentrates light near the mirror direction, so what you see depends on where you stand.

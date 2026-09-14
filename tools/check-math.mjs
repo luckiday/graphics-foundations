@@ -83,7 +83,7 @@ function assert(label, cond) {
     const cam = mat4.toRows(mat4.lookAt([10, 0, 0], [0, 0, 0], [0, 1, 0]));
     assert('ch5 frame axes: i′ = (0,0,−1)', cam[0][0] === 0 && cam[0][2] === -1);
     const V3 = rows(mat4.lookAt([0, 5, 0], [0, 0, 0], [0, 0, -1]));
-    expect('notes/05-change-of-basis.md', 'looking down: i′', `\\mathbf{i}' = (0,0,-1) \\times (0,1,0) = (${V3[0].slice(0, 3).map(x => f4(x + 0)).join(', ')})`);
+    expect('notes/05-change-of-basis.md', 'looking down: i′', `𝐢' = (0,0,-1) \\times (0,1,0) = (${V3[0].slice(0, 3).map(x => f4(x + 0)).join(', ')})`);
 }
 
 // ── chapter 6 and midterm practice ───────────────────────────────────────────────────────────

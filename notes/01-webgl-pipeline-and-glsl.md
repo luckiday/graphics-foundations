@@ -30,7 +30,7 @@ Stages 2 and 5 are yours to write. Everything else is fixed-function, controlled
 Vertices are usually stored in **object space**, relative to the shape's own origin. Three matrices, the subject of chapters 4–6, move them into **clip space**:
 
 ```math
-\mathbf{p}_{\text{clip}} = P \, V \, M \, \mathbf{p}_{\text{object}}
+𝐩_{\text{clip}} = P \, V \, M \, 𝐩_{\text{object}}
 ```
 
 The GPU then divides by the fourth coordinate $`w`$, the **perspective divide**, to get **normalized device coordinates** (NDC). NDC is a cube with $`x, y, z \in [-1, 1]`$. Finally the **viewport transform** maps NDC to pixel positions:

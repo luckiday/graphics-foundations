@@ -13,10 +13,10 @@ GPUs rasterize only points, line segments and triangles. A sphere, a teapot or a
 A circle of radius $`r`$ sampled at $`N`$ angles is a regular $`N`$-gon:
 
 ```math
-P_k = \left(r\cos\tfrac{2\pi k}{N},\ r\sin\tfrac{2\pi k}{N}\right), \qquad k = 0, \dots, N-1.
+P_k = \left(r\cos\, \tfrac{2\pi k}{N},\ r\sin\, \tfrac{2\pi k}{N}\right), \qquad k = 0, \dots, N-1.
 ```
 
-Its largest gap from the true circle is $`r\,(1 - \cos\tfrac{\pi}{N})`$, which shrinks as $`1/N^2`$. Doubling the sample count cuts the error by about four. That is why a sphere with a few hundred triangles already looks round, except along its **silhouette**, where the polygon edges show.
+Its largest gap from the true circle is $`r\,(1 - \cos\, \tfrac{\pi}{N})`$, which shrinks as $`1/N^2`$. Doubling the sample count cuts the error by about four. That is why a sphere with a few hundred triangles already looks round, except along its **silhouette**, where the polygon edges show.
 
 Surfaces are discretized the same way, with two parameters. A **parametric surface** $`S(s, t)`$ sampled on a grid of $`(s_i, t_j)`$ gives rows and columns of points, and each grid cell splits into two triangles. A **surface of revolution** sweeps a 2D profile curve around an axis: $`s`$ picks a point on the profile, $`t`$ picks the rotation angle. Cylinders, cones, tori, vases and bullets are all built this way.
 

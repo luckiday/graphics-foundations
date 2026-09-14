@@ -23,8 +23,8 @@ A false positive from the broad phase costs one extra narrow-phase test. A false
 
 | Volume | Stored as | Overlap test | Fit |
 |---|---|---|---|
-| sphere | center $`\mathbf{c}`$, radius $`r`$ | 1 distance comparison | loose for long, thin objects |
-| axis-aligned bounding box (AABB) | $`\mathbf{min}`$, $`\mathbf{max}`$ corners | 3 interval comparisons | good if aligned with the axes, poor when rotated |
+| sphere | center $`𝐜`$, radius $`r`$ | 1 distance comparison | loose for long, thin objects |
+| axis-aligned bounding box (AABB) | $`𝐦𝐢𝐧`$, $`𝐦𝐚𝐱`$ corners | 3 interval comparisons | good if aligned with the axes, poor when rotated |
 | oriented bounding box (OBB) | center, 3 axes, 3 half-extents | separating axis test, 15 axes | tight for most rigid shapes |
 | convex hull | vertices and faces | SAT or GJK | tightest convex fit |
 
@@ -72,7 +72,7 @@ Only finitely many axes need testing:
 | two convex polyhedra in 3D | every face normal of both, plus the cross product of every edge of one with every edge of the other |
 | two OBBs | 3 + 3 face axes + 3 × 3 edge-pair cross products = **15** |
 
-**Projecting** a shape onto an axis $`\mathbf{a}`$ means taking the minimum and maximum of $`\mathbf{p}\cdot\mathbf{a}`$ over its vertices. For a box, center $`\pm`$ extents is enough.
+**Projecting** a shape onto an axis $`𝐚`$ means taking the minimum and maximum of $`𝐩\cdot𝐚`$ over its vertices. For a box, center $`\pm`$ extents is enough.
 
 ```js
 function convex_polygons_overlap(P, Q) {                 // arrays of [x, y], convex, in order
@@ -123,7 +123,7 @@ const alpha = accumulator / dt;                     // draw at blend(previous_st
 **Response.** Detection tells you *that* objects collide. Response decides what happens next. The simplest response separates the objects along the contact normal, so they no longer overlap, and reflects the velocity component along that normal, scaled by a restitution coefficient $`e \in [0, 1]`$:
 
 ```math
-\mathbf{v}' = \mathbf{v} - (1 + e)\,(\mathbf{v}\cdot\hat{\mathbf{n}})\,\hat{\mathbf{n}}.
+𝐯' = 𝐯 - (1 + e)\,(𝐯\cdot\hat{𝐧})\,\hat{𝐧}.
 ```
 
 $`e = 1`$ is a perfectly elastic bounce; $`e = 0`$ stops the motion along the normal.
@@ -137,7 +137,7 @@ $`e = 1`$ is a perfectly elastic bounce; $`e = 0`$ stops the motion along the no
 3. Why is an AABB a poor bounding volume for a long, thin stick rotated 45°? What would you use instead?
 4. How many separating axes must be tested for two triangles in 3D?
 5. A ball moves at 30 m/s toward a wall 5 cm thick, simulated at 60 steps per second. Can a per-step overlap test miss the collision?
-6. A ball hits the floor ($`\hat{\mathbf{n}} = (0, 1, 0)`$) with velocity $`(2, -5, 0)`$. With $`e = 0.8`$, what is its velocity after the bounce?
+6. A ball hits the floor ($`\hat{𝐧} = (0, 1, 0)`$) with velocity $`(2, -5, 0)`$. With $`e = 0.8`$, what is its velocity after the bounce?
 
 <details><summary>Answers</summary>
 
@@ -146,7 +146,7 @@ $`e = 1`$ is a perfectly elastic bounce; $`e = 0`$ stops the motion along the no
 3. The AABB of a diagonal stick is a square that is mostly empty space, so it overlaps many things the stick does not. Use an OBB aligned with the stick, or a capsule.
 4. 2 face normals, plus $`3 \times 3 = 9`$ edge-pair cross products, for 11 in all. (Degenerate, parallel cases need care.)
 5. Yes. Each step moves the ball $`30 / 60 = 0.5`$ m, ten times the wall's thickness. The ball can be in front of the wall at one step and behind it at the next without ever overlapping it.
-6. $`\mathbf{v}\cdot\hat{\mathbf{n}} = -5`$, so $`\mathbf{v}' = (2, -5, 0) - 1.8 \cdot (-5)(0, 1, 0) = (2, -5 + 9, 0) = (2, 4, 0)`$.
+6. $`𝐯\cdot\hat{𝐧} = -5`$, so $`𝐯' = (2, -5, 0) - 1.8 \cdot (-5)(0, 1, 0) = (2, -5 + 9, 0) = (2, 4, 0)`$.
 
 </details>
 

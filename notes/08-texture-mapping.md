@@ -34,8 +34,8 @@ Assigning $`(u, v)`$ is called **parameterization**. A few standard mappings:
 | Mapping | $`(u, v)`$ for a point $`(x, y, z)`$ | Good for | Artifact |
 |---|---|---|---|
 | planar | $`(x, y)`$, scaled | floors, walls, decals | stretching on faces parallel to the projection |
-| cylindrical | $`\left(\frac{\operatorname{atan2}(z, x)}{2\pi} + \frac12,\ \ y\right)`$ | cans, trunks, columns | a seam where $`u`$ wraps from 1 to 0 |
-| spherical | $`\left(\frac{\operatorname{atan2}(z, x)}{2\pi} + \frac12,\ \ \frac{\arcsin y}{\pi} + \frac12\right)`$ | planets, skies | pinching at the poles |
+| cylindrical | $`\left(\frac{\mathrm{atan2}(z, x)}{2\pi} + \frac12,\ \ y\right)`$ | cans, trunks, columns | a seam where $`u`$ wraps from 1 to 0 |
+| spherical | $`\left(\frac{\mathrm{atan2}(z, x)}{2\pi} + \frac12,\ \ \frac{\arcsin\, y}{\pi} + \frac12\right)`$ | planets, skies | pinching at the poles |
 | per-face | each face gets the whole $`[0,1]^2`$ | cubes, boxes | none, but requires split vertices |
 | authored (UV unwrapping) | chosen by an artist in Blender, Maya, … | characters, props | none if done well |
 
@@ -82,7 +82,7 @@ Lighting depends on the **normal**, not on the actual geometry. Change the norma
 
 **Bump mapping** stores a grayscale **height** $`h(u, v)`$. The shader perturbs the normal using the height's slope, $`\partial h / \partial u`$ and $`\partial h / \partial v`$, along the surface's tangent directions. The geometry is unchanged: silhouettes stay perfectly straight and bumps cast no shadows.
 
-**Normal mapping** stores the perturbed normal directly, as RGB in **tangent space**: a frame made of the surface's tangent $`\mathbf{T}`$, bitangent $`\mathbf{B}`$ and normal $`\mathbf{N}`$ at each point. The shader rotates the stored normal into world space with the $`3\times3`$ matrix $`[\mathbf{T}\ \mathbf{B}\ \mathbf{N}]`$. It is the standard technique in games. Normal maps are usually "baked" from a high-polygon sculpt onto a low-polygon model.
+**Normal mapping** stores the perturbed normal directly, as RGB in **tangent space**: a frame made of the surface's tangent $`𝐓`$, bitangent $`𝐁`$ and normal $`𝐍`$ at each point. The shader rotates the stored normal into world space with the $`3\times3`$ matrix $`[𝐓\ 𝐁\ 𝐍]`$. It is the standard technique in games. Normal maps are usually "baked" from a high-polygon sculpt onto a low-polygon model.
 
 **Displacement mapping** actually moves the vertices along their normals by $`h(u, v)`$. It needs dense geometry, from pre-tessellation or a tessellation shader, but it changes silhouettes and occlusion correctly.
 
@@ -98,7 +98,7 @@ TinyGraphics' `Fake_Bump_Map` shader simply adds the texture color to the normal
 
 ## 8.6 Environment mapping
 
-A mirror-like object reflects its surroundings. **Environment mapping** approximates this by looking up a direction instead of a position. The shader computes the reflection vector $`\mathbf{r} = \operatorname{reflect}(-\mathbf{v}, \mathbf{n})`$ and samples a **cube map**, six images forming a box around the scene, in that direction. The same cube map drawn around the camera is a **skybox** (chapter 12). The approximation assumes the environment is infinitely far away, so nearby objects are not reflected correctly. For those, see mirrors in chapter 10 and ray tracing in chapter 11.
+A mirror-like object reflects its surroundings. **Environment mapping** approximates this by looking up a direction instead of a position. The shader computes the reflection vector $`𝐫 = \mathrm{reflect}(-𝐯, 𝐧)`$ and samples a **cube map**, six images forming a box around the scene, in that direction. The same cube map drawn around the camera is a **skybox** (chapter 12). The approximation assumes the environment is infinitely far away, so nearby objects are not reflected correctly. For those, see mirrors in chapter 10 and ray tracing in chapter 11.
 
 ---
 
