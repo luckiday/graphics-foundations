@@ -23,23 +23,23 @@ Translation shows why the difference matters. Moving an object moves its **point
 
 ## 2.2 Coordinate systems and homogeneous coordinates
 
-A **coordinate system**, or **frame**, is an origin $`O`$ plus basis vectors $`\mathbf{a}, \mathbf{b}, \mathbf{c}`$. Every vector is a combination of the basis vectors, and every point is the origin plus such a combination:
+A **coordinate system**, or **frame**, is an origin $`O`$ plus basis vectors $`𝐚, 𝐛, 𝐜`$. Every vector is a combination of the basis vectors, and every point is the origin plus such a combination:
 
 ```math
-\mathbf{v} = v_1 \mathbf{a} + v_2 \mathbf{b} + v_3 \mathbf{c},
+𝐯 = v_1 𝐚 + v_2 𝐛 + v_3 𝐜,
 \qquad
-P = O + p_1 \mathbf{a} + p_2 \mathbf{b} + p_3 \mathbf{c}.
+P = O + p_1 𝐚 + p_2 𝐛 + p_3 𝐜.
 ```
 
 Both can be written with one matrix of basis vectors and origin, if we add a fourth coordinate:
 
 ```math
-\mathbf{v} =
-\begin{bmatrix} \mathbf{a} & \mathbf{b} & \mathbf{c} & O \end{bmatrix}
+𝐯 =
+\begin{bmatrix} 𝐚 & 𝐛 & 𝐜 & O \end{bmatrix}
 \begin{bmatrix} v_1 \\ v_2 \\ v_3 \\ 0 \end{bmatrix},
 \qquad
 P =
-\begin{bmatrix} \mathbf{a} & \mathbf{b} & \mathbf{c} & O \end{bmatrix}
+\begin{bmatrix} 𝐚 & 𝐛 & 𝐜 & O \end{bmatrix}
 \begin{bmatrix} p_1 \\ p_2 \\ p_3 \\ 1 \end{bmatrix}.
 ```
 
@@ -84,21 +84,21 @@ For two points, the affine combinations $`\alpha P + (1 - \alpha) Q`$ trace the 
 
 ## 2.4 Parametric lines, planes and triangles
 
-**Line** through $`P_0`$ with direction $`\mathbf{d}`$:
+**Line** through $`P_0`$ with direction $`𝐝`$:
 
 ```math
-P(t) = P_0 + t\,\mathbf{d}.
+P(t) = P_0 + t\,𝐝.
 ```
 
-Choosing $`t \ge 0`$ gives a **ray**; $`t \in [0, 1]`$ with $`\mathbf{d} = P_1 - P_0`$ gives a **segment**.
+Choosing $`t \ge 0`$ gives a **ray**; $`t \in [0, 1]`$ with $`𝐝 = P_1 - P_0`$ gives a **segment**.
 
-**Plane** through $`P`$ spanned by vectors $`\mathbf{u}, \mathbf{v}`$:
+**Plane** through $`P`$ spanned by vectors $`𝐮, 𝐯`$:
 
 ```math
-P(\alpha, \beta) = P + \alpha\,\mathbf{u} + \beta\,\mathbf{v}.
+P(\alpha, \beta) = P + \alpha\,𝐮 + \beta\,𝐯.
 ```
 
-Its **normal** $`\mathbf{n} = \mathbf{u} \times \mathbf{v}`$ is perpendicular to both. That gives the implicit form: a point $`X`$ lies on the plane exactly when $`(X - P) \cdot \mathbf{n} = 0`$.
+Its **normal** $`𝐧 = 𝐮 \times 𝐯`$ is perpendicular to both. That gives the implicit form: a point $`X`$ lies on the plane exactly when $`(X - P) \cdot 𝐧 = 0`$.
 
 **Triangle** $`PQR`$: a point $`S(\alpha) = \alpha P + (1 - \alpha) Q`$ lies on edge $`PQ`$, and mixing it with $`R`$ gives
 
@@ -133,42 +133,42 @@ Each weight is also a ratio of areas. $`\alpha`$ is the area of the sub-triangle
 **Computing them.** With 2D coordinates or areas:
 
 ```math
-\alpha = \frac{\operatorname{area}(X, Q, R)}{\operatorname{area}(P, Q, R)}, \quad
-\beta = \frac{\operatorname{area}(P, X, R)}{\operatorname{area}(P, Q, R)}, \quad
+\alpha = \frac{\mathrm{area}(X, Q, R)}{\mathrm{area}(P, Q, R)}, \quad
+\beta = \frac{\mathrm{area}(P, X, R)}{\mathrm{area}(P, Q, R)}, \quad
 \gamma = 1 - \alpha - \beta,
 ```
 
-where a signed area comes from a cross product, $`\operatorname{area}(A, B, C) = \tfrac12\,((B - A) \times (C - A)) \cdot \hat{\mathbf{n}}`$.
+where a signed area comes from a cross product, $`\mathrm{area}(A, B, C) = \tfrac12\,((B - A) \times (C - A)) \cdot \hat{𝐧}`$.
 
 ## 2.6 What the dot and cross products mean
 
 **Dot product.**
 
 ```math
-\mathbf{u} \cdot \mathbf{v} = u_x v_x + u_y v_y + u_z v_z = \lVert\mathbf{u}\rVert\,\lVert\mathbf{v}\rVert \cos\theta
+𝐮 \cdot 𝐯 = u_x v_x + u_y v_y + u_z v_z = \lVert𝐮\rVert\,\lVert𝐯\rVert \cos\, \theta
 ```
 
-| Sign of $`\mathbf{u} \cdot \mathbf{v}`$ | Angle between them |
+| Sign of $`𝐮 \cdot 𝐯`$ | Angle between them |
 |---|---|
 | positive | acute ($`\theta \lt 90°`$): roughly the same direction |
 | zero | perpendicular |
 | negative | obtuse: roughly opposite directions |
 
-Uses: the angle between vectors; projecting $`\mathbf{v}`$ onto a unit vector $`\hat{\mathbf{u}}`$, whose length is $`\mathbf{v} \cdot \hat{\mathbf{u}}`$; testing which side of a plane a point is on; and the cosine factor in diffuse lighting (chapter 7).
+Uses: the angle between vectors; projecting $`𝐯`$ onto a unit vector $`\hat{𝐮}`$, whose length is $`𝐯 \cdot \hat{𝐮}`$; testing which side of a plane a point is on; and the cosine factor in diffuse lighting (chapter 7).
 
 **Cross product** (3D only).
 
 ```math
-\mathbf{u} \times \mathbf{v} = (u_y v_z - u_z v_y,\ u_z v_x - u_x v_z,\ u_x v_y - u_y v_x)
+𝐮 \times 𝐯 = (u_y v_z - u_z v_y,\ u_z v_x - u_x v_z,\ u_x v_y - u_y v_x)
 ```
 
-Its direction is perpendicular to both inputs, following the right-hand rule. Its length is $`\lVert\mathbf{u}\rVert\,\lVert\mathbf{v}\rVert \sin\theta`$, the area of the parallelogram the two vectors span. Uses: surface normals, triangle area, building an orthonormal camera basis (chapter 6), and deciding whether a triangle winds clockwise or counter-clockwise (chapter 3).
+Its direction is perpendicular to both inputs, following the right-hand rule. Its length is $`\lVert𝐮\rVert\,\lVert𝐯\rVert \sin\, \theta`$, the area of the parallelogram the two vectors span. Uses: surface normals, triangle area, building an orthonormal camera basis (chapter 6), and deciding whether a triangle winds clockwise or counter-clockwise (chapter 3).
 
 ---
 
 ## Check yourself
 
-1. For unit vectors $`\mathbf{u}`$ and $`\mathbf{v}`$, what can you say about the angle between them if $`\mathbf{u} \cdot \mathbf{v}`$ is (a) $`0.3`$, (b) $`-1`$, (c) $`0`$? If the vectors are not unit length and $`\mathbf{u} \cdot \mathbf{v} = -1.5`$, what can you still say?
+1. For unit vectors $`𝐮`$ and $`𝐯`$, what can you say about the angle between them if $`𝐮 \cdot 𝐯`$ is (a) $`0.3`$, (b) $`-1`$, (c) $`0`$? If the vectors are not unit length and $`𝐮 \cdot 𝐯 = -1.5`$, what can you still say?
 2. Is $`0.5P + 0.8Q - 0.3R`$ a point? Is it inside triangle $`PQR`$?
 3. What are the barycentric coordinates of the midpoint of edge $`QR`$?
 4. A triangle has vertices $`A = (0,0,0)`$, $`B = (2,0,0)`$, $`C = (0,3,0)`$. Find a unit normal and the triangle's area.
@@ -176,7 +176,7 @@ Its direction is perpendicular to both inputs, following the right-hand rule. It
 
 <details><summary>Answers</summary>
 
-1. (a) $`\cos\theta = 0.3`$, so $`\theta \approx 72.5°`$: acute. (b) $`\theta = 180°`$: exactly opposite. (c) $`\theta = 90°`$: perpendicular. With non-unit vectors, only the sign is informative: $`-1.5 \lt 0`$ means the angle is obtuse.
+1. (a) $`\cos\, \theta = 0.3`$, so $`\theta \approx 72.5°`$: acute. (b) $`\theta = 180°`$: exactly opposite. (c) $`\theta = 90°`$: perpendicular. With non-unit vectors, only the sign is informative: $`-1.5 \lt 0`$ means the angle is obtuse.
 2. The weights sum to $`0.5 + 0.8 - 0.3 = 1`$, so it is an affine combination and therefore a point. One weight is negative, so it is not a convex combination and lies **outside** the triangle.
 3. $`(0, \tfrac12, \tfrac12)`$.
 4. $`(B - A) \times (C - A) = (2,0,0) \times (0,3,0) = (0, 0, 6)`$. The unit normal is $`(0,0,1)`$ and the area is $`\tfrac12 \cdot 6 = 3`$.

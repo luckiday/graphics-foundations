@@ -11,7 +11,7 @@
 ![Coordinate spaces](../figures/coordinate-spaces.svg)
 
 ```math
-\mathbf{p}_{\text{clip}} = \underbrace{P}_{\text{projection}}\; \underbrace{V}_{\text{view}}\; \underbrace{M}_{\text{model}}\; \mathbf{p}_{\text{object}}
+𝐩_{\text{clip}} = \underbrace{P}_{\text{projection}}\; \underbrace{V}_{\text{view}}\; \underbrace{M}_{\text{model}}\; 𝐩_{\text{object}}
 ```
 
 | Step | Question it answers |
@@ -31,11 +31,11 @@ The camera convention used by OpenGL, WebGL and these notes is: **the camera sit
 Chapter 5 built the camera's frame from an eye point, a target point ("at") and an up hint:
 
 ```math
-\mathbf{n} = \frac{\text{eye} - \text{at}}{\lVert \text{eye} - \text{at} \rVert},
+𝐧 = \frac{\text{eye} - \text{at}}{\lVert \text{eye} - \text{at} \rVert},
 \qquad
-\mathbf{u} = \frac{\text{up} \times \mathbf{n}}{\lVert \text{up} \times \mathbf{n} \rVert},
+𝐮 = \frac{\text{up} \times 𝐧}{\lVert \text{up} \times 𝐧 \rVert},
 \qquad
-\mathbf{v} = \mathbf{n} \times \mathbf{u}.
+𝐯 = 𝐧 \times 𝐮.
 ```
 
 The view matrix is that frame's inverse. Its rows are the camera axes, and its last column moves the eye to the origin:
@@ -43,9 +43,9 @@ The view matrix is that frame's inverse. Its rows are the camera axes, and its l
 ```math
 V = R\,T(-\text{eye}) =
 \begin{bmatrix}
-u_x & u_y & u_z & -\mathbf{u}\cdot\text{eye} \\
-v_x & v_y & v_z & -\mathbf{v}\cdot\text{eye} \\
-n_x & n_y & n_z & -\mathbf{n}\cdot\text{eye} \\
+u_x & u_y & u_z & -𝐮\cdot\text{eye} \\
+v_x & v_y & v_z & -𝐯\cdot\text{eye} \\
+n_x & n_y & n_z & -𝐧\cdot\text{eye} \\
 0 & 0 & 0 & 1
 \end{bmatrix}.
 ```
@@ -135,7 +135,7 @@ P_{\text{frustum}} =
 \end{bmatrix}.
 ```
 
-For a symmetric window ($`l = -r`$, $`b = -t`$), the third-column terms vanish. Describing the window by a vertical field of view and an aspect ratio, $`t = n\tan\frac{\text{fovy}}{2}`$ and $`r = t \cdot \text{aspect}`$, gives the familiar form:
+For a symmetric window ($`l = -r`$, $`b = -t`$), the third-column terms vanish. Describing the window by a vertical field of view and an aspect ratio, $`t = n\tan\, \frac{\text{fovy}}{2}`$ and $`r = t \cdot \text{aspect}`$, gives the familiar form:
 
 ```math
 P_{\text{persp}} =
@@ -218,16 +218,16 @@ Each change below holds all other parameters fixed. For a perspective camera:
 
 <details><summary>Answers</summary>
 
-1. $`\mathbf{n} = (-1, 0, 0)`$, $`\mathbf{u} = (0,1,0) \times (-1,0,0) = (0, 0, 1)`$, $`\mathbf{v} = \mathbf{n}\times\mathbf{u} = (0, 1, 0)`$. The translation column is $`(-\mathbf{u}\cdot\text{eye}, -\mathbf{v}\cdot\text{eye}, -\mathbf{n}\cdot\text{eye}) = (0, 0, -10)`$. So
+1. $`𝐧 = (-1, 0, 0)`$, $`𝐮 = (0,1,0) \times (-1,0,0) = (0, 0, 1)`$, $`𝐯 = 𝐧\times𝐮 = (0, 1, 0)`$. The translation column is $`(-𝐮\cdot\text{eye}, -𝐯\cdot\text{eye}, -𝐧\cdot\text{eye}) = (0, 0, -10)`$. So
 
    ```math
    V = \begin{bmatrix} 0&0&1&0 \\ 0&1&0&0 \\ -1&0&0&-10 \\ 0&0&0&1 \end{bmatrix}
    ```
 
-   Then $`V(1,1,1,1)^\mathsf{T} = (1, 1, -11, 1)`$. The point is 11 units ahead, one right and one up.
+   Then $`V(1,1,1,1)^{𝖳} = (1, 1, -11, 1)`$. The point is 11 units ahead, one right and one up.
 
 2. $`x = 2/20 \cdot 1 = 0.1`$ and $`y = 0.1`$. $`z = -\tfrac{2}{20}(-11) - \tfrac{22}{20} = 1.1 - 1.1 = 0`$. NDC $`(0.1, 0.1, 0)`$: exactly halfway through the depth range, as it should be, since $`-11`$ is halfway between $`-1`$ and $`-21`$.
-3. $`c = 1/\tan 45° = 1`$, $`a = -22/20 = -1.1`$, $`b = -42/20 = -2.1`$. Clip coordinates $`= (1,\ 1,\ -1.1\cdot(-11) - 2.1,\ 11) = (1, 1, 10, 11)`$. NDC $`= (1/11, 1/11, 10/11) \approx (0.091, 0.091, 0.909)`$. Compare with question 2: the same point sits much deeper in NDC under perspective, which is the non-uniform precision of §6.4.
+3. $`c = 1/\tan\, 45° = 1`$, $`a = -22/20 = -1.1`$, $`b = -42/20 = -2.1`$. Clip coordinates $`= (1,\ 1,\ -1.1\cdot(-11) - 2.1,\ 11) = (1, 1, 10, 11)`$. NDC $`= (1/11, 1/11, 10/11) \approx (0.091, 0.091, 0.909)`$. Compare with question 2: the same point sits much deeper in NDC under perspective, which is the non-uniform precision of §6.4.
 4. $`z_{\text{ndc}} = -a - b/z`$. At $`z = -n`$ this is $`\frac{f+n}{f-n} - \frac{2fn}{(f-n)n} = \frac{f + n - 2f}{f-n} = -1`$. $`x`$ and $`y`$ do not appear in the formula.
 5. $`z = -0.1 \mapsto -1`$ and $`z = -1 \mapsto \approx 0.8018`$, so the range used is $`1.8018`$ out of $`2`$, about **90%**.
 6. After the divide, points behind the camera ($`w \lt 0`$) flip through the origin and land in front, and points near the eye ($`w \approx 0`$) blow up. In clip space, the tests $`-w \le x, y, z \le w`$ are linear and handle both cases.

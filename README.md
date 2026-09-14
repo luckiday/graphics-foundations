@@ -59,12 +59,16 @@ tools/        local server and the checks below
 The notes are tested like code:
 
 ```bash
-npm install                         # playwright-core, used only by the demo check
+npm install                         # playwright-core, used by the demo and GitHub-math checks
+python3 tools/fix_math.py           # rewrite math into the forms github.com renders correctly
 node tools/check-math.mjs           # recompute every worked number in notes/ and exercises/
 node tools/check-links.mjs          # links, anchors, original-figures-only, no course logistics
 node tools/check-demos.mjs          # load each demo in headless Chromium, press every control, screenshot
+node tools/audit-gh-math.mjs <ref>  # open each page on github.com at a pushed ref, flag math that renders wrong
 python3 tools/figures.py            # regenerate figures/ from code
 ```
+
+GitHub renders math as native MathML, and Chromium supports only MathML Core. `\mathbf`, `\boxed`, `\tag` and `\operatorname` all look fine in the source but come out wrong on github.com, with no error. `fix_math.py` rewrites them, and `audit-gh-math` checks the result on the real page.
 
 `check-demos` needs a local Chromium with WebGL 2, and writes screenshots to `tools/shots/` for a person to look at.
 

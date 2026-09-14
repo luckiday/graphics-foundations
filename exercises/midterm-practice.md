@@ -83,7 +83,7 @@ The linear part is
 S R = \begin{bmatrix} -1&0 \\ 0&1 \end{bmatrix}\begin{bmatrix} 0&-1 \\ 1&0 \end{bmatrix} = \begin{bmatrix} 0&1 \\ 1&0 \end{bmatrix},
 ```
 
-and the translation column is $`SR\,(2, 1)^\mathsf{T} = (1, 2)^\mathsf{T}`$, so
+and the translation column is $`SR\,(2, 1)^{𝖳} = (1, 2)^{𝖳}`$, so
 
 ```math
 M = \begin{bmatrix} 0&1&0&1 \\ 1&0&0&2 \\ 0&0&1&0 \\ 0&0&0&1 \end{bmatrix}.
@@ -103,10 +103,10 @@ Reflect the point $`(1, 2, 3)`$ across the plane $`x = y`$.
 
 <details><summary>Solution</summary>
 
-The unit normal is $`\hat{\mathbf{n}} = (1, -1, 0)/\sqrt2`$, and $`\mathbf{p}\cdot\hat{\mathbf{n}} = (1 - 2)/\sqrt2 = -1/\sqrt2`$. Then
+The unit normal is $`\hat{𝐧} = (1, -1, 0)/\sqrt2`$, and $`𝐩\cdot\hat{𝐧} = (1 - 2)/\sqrt2 = -1/\sqrt2`$. Then
 
 ```math
-\mathbf{p}' = \mathbf{p} - 2(\mathbf{p}\cdot\hat{\mathbf{n}})\hat{\mathbf{n}} = (1,2,3) + 2\cdot\tfrac{1}{\sqrt2}\cdot\tfrac{(1,-1,0)}{\sqrt2} = (1,2,3) + (1,-1,0) = (2, 1, 3).
+𝐩' = 𝐩 - 2(𝐩\cdot\hat{𝐧})\hat{𝐧} = (1,2,3) + 2\cdot\tfrac{1}{\sqrt2}\cdot\tfrac{(1,-1,0)}{\sqrt2} = (1,2,3) + (1,-1,0) = (2, 1, 3).
 ```
 
 Reflecting across $`x = y`$ swaps $`x`$ and $`y`$, as expected.
@@ -119,9 +119,9 @@ A frame has origin $`(1, 2, 0)`$ and is rotated $`90°`$ about $`z`$ relative to
 
 <details><summary>Solution</summary>
 
-The frame matrix is $`M = T(1, 2, 0)\,R_z(90°)`$, and frame coordinates are $`M^{-1}\mathbf{p} = R_z(-90°)\,(\mathbf{p} - O)`$.
+The frame matrix is $`M = T(1, 2, 0)\,R_z(90°)`$, and frame coordinates are $`M^{-1}𝐩 = R_z(-90°)\,(𝐩 - O)`$.
 
-$`\mathbf{p} - O = (0, 1, 0)`$, and $`R_z(-90°)`$ maps $`(x, y) \mapsto (y, -x)`$, giving **(1, 0, 0)**.
+$`𝐩 - O = (0, 1, 0)`$, and $`R_z(-90°)`$ maps $`(x, y) \mapsto (y, -x)`$, giving **(1, 0, 0)**.
 
 Check: the frame's $`x`$ axis points along world $`+y`$, and the point lies one unit in world $`+y`$ from the frame's origin.
 
@@ -137,15 +137,15 @@ A camera at $`(0, 10, 10)`$ looks at the origin with up hint $`(0, 1, 0)`$.
 
 <details><summary>Solution</summary>
 
-(a) $`\mathbf{n} = (0, 10, 10)/\lVert\cdot\rVert = (0, 0.7071, 0.7071)`$. $`\mathbf{u} = (0,1,0) \times \mathbf{n} = (0.7071, 0, 0)`$, which normalizes to $`(1, 0, 0)`$. $`\mathbf{v} = \mathbf{n}\times\mathbf{u} = (0, 0.7071, -0.7071)`$. The translation column is $`(-\mathbf{u}\cdot\text{eye}, -\mathbf{v}\cdot\text{eye}, -\mathbf{n}\cdot\text{eye}) = (0, 0, -14.1421)`$:
+(a) $`𝐧 = (0, 10, 10)/\lVert\cdot\rVert = (0, 0.7071, 0.7071)`$. $`𝐮 = (0,1,0) \times 𝐧 = (0.7071, 0, 0)`$, which normalizes to $`(1, 0, 0)`$. $`𝐯 = 𝐧\times𝐮 = (0, 0.7071, -0.7071)`$. The translation column is $`(-𝐮\cdot\text{eye}, -𝐯\cdot\text{eye}, -𝐧\cdot\text{eye}) = (0, 0, -14.1421)`$:
 
 ```math
 V = \begin{bmatrix} 1&0&0&0 \\ 0&0.7071&-0.7071&0 \\ 0&0.7071&0.7071&-14.1421 \\ 0&0&0&1 \end{bmatrix}.
 ```
 
-(b) $`V(0, 1, 0, 1)^\mathsf{T} = (0,\ 0.7071,\ 0.7071 - 14.1421,\ 1) = (0, 0.7071, -13.435)`$.
+(b) $`V(0, 1, 0, 1)^{𝖳} = (0,\ 0.7071,\ 0.7071 - 14.1421,\ 1) = (0, 0.7071, -13.435)`$.
 
-(c) $`c = 1/\tan 30° = 1.7321`$, $`a = -\tfrac{101}{99}`$ and $`b = -\tfrac{200}{99}`$. The clip coordinates are
+(c) $`c = 1/\tan\, 30° = 1.7321`$, $`a = -\tfrac{101}{99}`$ and $`b = -\tfrac{200}{99}`$. The clip coordinates are
 $`(0,\ 1.7321 \cdot 0.7071,\ a(-13.435) + b,\ 13.435) = (0, 1.2247, 11.6862, 13.435)`$,
 so the NDC is $`(0, 0.0912, 0.8698)`$. The point appears slightly above center. It is only 13.4 units away in a near–far range of 1 to 100, yet its NDC depth is already 0.87: the non-uniform precision of chapter 6.
 

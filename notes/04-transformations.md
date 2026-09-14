@@ -45,9 +45,9 @@ With $`s_x = s_y = s_z`$ the scale is **uniform** and preserves angles. A negati
 **Rotation** by angle $`\theta`$ about a coordinate axis, counter-clockwise when looking from the positive axis toward the origin (the right-hand rule):
 
 ```math
-R_x = \begin{bmatrix} 1&0&0&0 \\ 0&\cos\theta&-\sin\theta&0 \\ 0&\sin\theta&\cos\theta&0 \\ 0&0&0&1 \end{bmatrix},\quad
-R_y = \begin{bmatrix} \cos\theta&0&\sin\theta&0 \\ 0&1&0&0 \\ -\sin\theta&0&\cos\theta&0 \\ 0&0&0&1 \end{bmatrix},\quad
-R_z = \begin{bmatrix} \cos\theta&-\sin\theta&0&0 \\ \sin\theta&\cos\theta&0&0 \\ 0&0&1&0 \\ 0&0&0&1 \end{bmatrix}.
+R_x = \begin{bmatrix} 1&0&0&0 \\ 0&\cos\, \theta&-\sin\, \theta&0 \\ 0&\sin\, \theta&\cos\, \theta&0 \\ 0&0&0&1 \end{bmatrix},\quad
+R_y = \begin{bmatrix} \cos\, \theta&0&\sin\, \theta&0 \\ 0&1&0&0 \\ -\sin\, \theta&0&\cos\, \theta&0 \\ 0&0&0&1 \end{bmatrix},\quad
+R_z = \begin{bmatrix} \cos\, \theta&-\sin\, \theta&0&0 \\ \sin\, \theta&\cos\, \theta&0&0 \\ 0&0&1&0 \\ 0&0&0&1 \end{bmatrix}.
 ```
 
 To remember them: rotating about an axis leaves that axis's row and column as the identity. The minus sign sits so that $`R_z`$ takes $`\hat{x}`$ to $`\hat{y}`$, $`R_x`$ takes $`\hat{y}`$ to $`\hat{z}`$, and $`R_y`$ takes $`\hat{z}`$ to $`\hat{x}`$. This is why $`R_y`$ looks "flipped" compared to the other two. For example, with $`\theta = 45°`$:
@@ -56,14 +56,14 @@ To remember them: rotating about an axis leaves that axis's row and column as th
 R_z(45°) = \begin{bmatrix} \tfrac{1}{\sqrt2}&-\tfrac{1}{\sqrt2}&0&0 \\ \tfrac{1}{\sqrt2}&\tfrac{1}{\sqrt2}&0&0 \\ 0&0&1&0 \\ 0&0&0&1 \end{bmatrix}.
 ```
 
-A rotation matrix's $`3 \times 3`$ block is **orthonormal**: its columns are perpendicular unit vectors. So its inverse is its transpose, $`R^{-1} = R^\mathsf{T} = R(-\theta)`$.
+A rotation matrix's $`3 \times 3`$ block is **orthonormal**: its columns are perpendicular unit vectors. So its inverse is its transpose, $`R^{-1} = R^{𝖳} = R(-\theta)`$.
 
-**Rotation about any axis** through the origin, with unit direction $`\hat{\mathbf{a}} = (a_x, a_y, a_z)`$, is given by Rodrigues' formula:
+**Rotation about any axis** through the origin, with unit direction $`\hat{𝐚} = (a_x, a_y, a_z)`$, is given by Rodrigues' formula:
 
 ```math
-R = \cos\theta\, I + \sin\theta\, [\hat{\mathbf{a}}]_\times + (1 - \cos\theta)\, \hat{\mathbf{a}}\hat{\mathbf{a}}^\mathsf{T},
+R = \cos\, \theta\, I + \sin\, \theta\, [\hat{𝐚}]_\times + (1 - \cos\, \theta)\, \hat{𝐚}\hat{𝐚}^{𝖳},
 \qquad
-[\hat{\mathbf{a}}]_\times = \begin{bmatrix} 0&-a_z&a_y \\ a_z&0&-a_x \\ -a_y&a_x&0 \end{bmatrix}.
+[\hat{𝐚}]_\times = \begin{bmatrix} 0&-a_z&a_y \\ a_z&0&-a_x \\ -a_y&a_x&0 \end{bmatrix}.
 ```
 
 `Mat4.rotation(angle, x, y, z)` implements this formula.
@@ -78,14 +78,14 @@ H = \begin{bmatrix} 1&h_{xy}&h_{xz}&0 \\ h_{yx}&1&h_{yz}&0 \\ h_{zx}&h_{zy}&1&0 
 
 A single shear $`h_{xy}`$ slides each horizontal slice sideways in proportion to its height, the way a deck of cards leans. Its inverse is the shear by $`-h_{xy}`$. You rarely build shears on purpose, but they appear whenever a non-uniform scale is followed by a rotation of the scaled frame (§4.5).
 
-**Reflection** across a plane through the origin with unit normal $`\hat{\mathbf{n}}`$:
+**Reflection** across a plane through the origin with unit normal $`\hat{𝐧}`$:
 
 ```math
-F = I - 2\,\hat{\mathbf{n}}\hat{\mathbf{n}}^\mathsf{T}
+F = I - 2\,\hat{𝐧}\hat{𝐧}^{𝖳}
 = \begin{bmatrix} 1-2n_x^2 & -2n_xn_y & -2n_xn_z \\ -2n_xn_y & 1-2n_y^2 & -2n_yn_z \\ -2n_xn_z & -2n_yn_z & 1-2n_z^2 \end{bmatrix}.
 ```
 
-The formula follows from removing twice the component of $`\mathbf{p}`$ along $`\hat{\mathbf{n}}`$: $`\mathbf{p}' = \mathbf{p} - 2(\mathbf{p}\cdot\hat{\mathbf{n}})\hat{\mathbf{n}}`$. A reflection is its own inverse. Its determinant is $`-1`$, so it flips winding order (chapter 3): a mirrored mesh's front faces become back faces.
+The formula follows from removing twice the component of $`𝐩`$ along $`\hat{𝐧}`$: $`𝐩' = 𝐩 - 2(𝐩\cdot\hat{𝐧})\hat{𝐧}`$. A reflection is its own inverse. Its determinant is $`-1`$, so it flips winding order (chapter 3): a mirrored mesh's front faces become back faces.
 
 ## 4.3 Order matters
 
@@ -93,7 +93,7 @@ Matrix multiplication is **not commutative**, and neither are transformations.
 
 ![Transformation order](../figures/transform-order.svg)
 
-In $`M = T\,R`$ applied to a point $`\mathbf{p}`$, the matrix nearest $`\mathbf{p}`$ acts first: $`M\mathbf{p} = T(R\,\mathbf{p})`$. So $`TR`$ rotates and then translates, while $`RT`$ translates and then rotates about the origin, swinging the object around it. The same holds for scaling: $`TS`$ scales in place and then moves, while $`ST`$ also scales the translation distance.
+In $`M = T\,R`$ applied to a point $`𝐩`$, the matrix nearest $`𝐩`$ acts first: $`M𝐩 = T(R\,𝐩)`$. So $`TR`$ rotates and then translates, while $`RT`$ translates and then rotates about the origin, swinging the object around it. The same holds for scaling: $`TS`$ scales in place and then moves, while $`ST`$ also scales the translation distance.
 
 There are two equally valid ways to read a product such as $`M = T\,R\,S`$:
 
@@ -110,10 +110,10 @@ model = model.times(Mat4.scale(1, 3, 1));          // stretch along the spun fra
 shape.draw(context, program_state, model, material);
 ```
 
-**Rotating or scaling about a point** $`\mathbf{c}`$ other than the origin: move $`\mathbf{c}`$ to the origin, transform, then move it back.
+**Rotating or scaling about a point** $`𝐜`$ other than the origin: move $`𝐜`$ to the origin, transform, then move it back.
 
 ```math
-R_{\mathbf{c}} = T(\mathbf{c})\; R\; T(-\mathbf{c}).
+R_{𝐜} = T(𝐜)\; R\; T(-𝐜).
 ```
 
 **Inverse of a product:** $`(ABC)^{-1} = C^{-1} B^{-1} A^{-1}`$. You undo the steps in reverse order, like taking off shoes and then socks.
@@ -173,7 +173,7 @@ draw(forearm, arm.times(Mat4.scale(1, .2, .2)));
 Two habits keep hierarchies correct:
 
 1. **Scale each part inside its own draw call.** Never keep the scale in the matrix you pass to children. A non-uniform scale left in the chain turns every later rotation into a shear.
-2. **Rotate about the joint.** Translate to the joint, rotate, then translate out to the part's center. This is the $`T(\mathbf{c})\,R\,T(-\mathbf{c})`$ pattern again.
+2. **Rotate about the joint.** Translate to the joint, rotate, then translate out to the part's center. This is the $`T(𝐜)\,R\,T(-𝐜)`$ pattern again.
 
 When a tree branches, save the parent matrix before descending into one branch and restore it before the next. With immutable `.times()` this is automatic: keep the parent in its own variable. Older APIs used an explicit **matrix stack**, `push()` and `pop()`, for the same purpose.
 
@@ -214,7 +214,7 @@ There are two styles:
 
 2. $`T\,S`$: scale to $`(2, 2)`$, then translate to $`(5, 2)`$. $`S\,T`$: translate to $`(4, 1)`$, then scale to $`(8, 2)`$.
 3. $`T(4,5,0)\; R_z(\theta)\; T(-4,-5,0)`$.
-4. $`\hat{\mathbf{n}} = (1, 1, 0)/\sqrt2`$ and $`\mathbf{p}\cdot\hat{\mathbf{n}} = 3/\sqrt2`$, so $`\mathbf{p}' = \mathbf{p} - 2\cdot\tfrac{3}{\sqrt2}\cdot\tfrac{(1,1,0)}{\sqrt2} = (1,2,3) - (3,3,0) = (-2, -1, 3)`$.
+4. $`\hat{𝐧} = (1, 1, 0)/\sqrt2`$ and $`𝐩\cdot\hat{𝐧} = 3/\sqrt2`$, so $`𝐩' = 𝐩 - 2\cdot\tfrac{3}{\sqrt2}\cdot\tfrac{(1,1,0)}{\sqrt2} = (1,2,3) - (3,3,0) = (-2, -1, 3)`$.
 5. The child's matrix is $`S\,R`$. Its linear part $`S\,R_z`$ stretches the *rotated* $`y`$ direction, so the child's axes stop being perpendicular after the scale. A non-orthogonal pair of axes is a shear.
 6. No. $`(TR)^{-1} = R^{-1}T^{-1}`$: undo the last step first.
 
