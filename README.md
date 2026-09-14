@@ -78,4 +78,8 @@ The original weekly discussion materials remain available in the [`archive-2019f
 
 ## License
 
-No license has been chosen yet. Until one is, this material is published for reading and personal study, and all rights are reserved by the author.
+This material is published for reading and learning, and all rights not granted below remain with its authors.
+
+The notes, exercises, figures and demos are © Yunqi Guo, licensed under [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/) (CC BY-NC-ND 4.0); the full text is in [LICENSE](LICENSE). You may read them, study them, and share unmodified copies for non-commercial purposes, with credit and a link to this repository. You may not distribute modified versions or use the material commercially without permission.
+
+TinyGraphics.js is a separate project with its own terms; the demos load it from its published site and do not include a copy.
