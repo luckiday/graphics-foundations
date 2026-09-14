@@ -20,7 +20,7 @@
 | view $`V`$ | where is the world relative to the camera? |
 | projection $`P`$ | which part of camera space is visible, and how is it flattened? |
 | divide by $`w`$ | turn homogeneous clip coordinates into normalized device coordinates (NDC) |
-| viewport | stretch NDC $`[-1, 1]^2`$ over the canvas's pixels |
+| viewport | stretch NDC $`[-1, 1]^2`$ over the canvas's pixels, and map $`z_{\text{ndc}}`$ to a depth in $`[0, 1]`$ |
 
 The camera convention used by OpenGL, WebGL and these notes is: **the camera sits at the origin of camera space, looks down $`-z`$, with $`+y`$ up and $`+x`$ to the right.**
 
@@ -28,7 +28,7 @@ The camera convention used by OpenGL, WebGL and these notes is: **the camera sit
 
 ![look_at camera basis](../figures/look-at.svg)
 
-Chapter 5 built the camera's frame from an eye point, a target point ("at") and an up hint:
+Chapter 5 built the camera's frame from an eye point, a target point ("at", chapter 5's $`P_{\text{ref}}`$) and an up hint. This chapter uses the names `Mat4.look_at` uses: $`𝐮, 𝐯, 𝐧`$ are chapter 5's $`𝐢', 𝐣', 𝐤'`$.
 
 ```math
 𝐧 = \frac{\text{eye} - \text{at}}{\lVert \text{eye} - \text{at} \rVert},
@@ -58,7 +58,7 @@ An equivalent view: the default camera ($`V = I`$) sits at the origin looking do
 
 ![View volumes](../figures/view-volumes.svg)
 
-An orthographic camera sees a box: $`x \in [l, r]`$, $`y \in [b, t]`$, and depths between the **near** and **far** distances, $`z \in [-n, -f]`$ (so $`0 \lt n \lt f`$). Projection must map this box onto the NDC cube $`[-1, 1]^3`$. That takes a translation, which moves the box's center to the origin, followed by a scale:
+An orthographic camera sees a box: $`x \in [l, r]`$, $`y \in [b, t]`$, and depths between the **near** and **far** distances, $`z \in [-f, -n]`$ (so $`0 \lt n \lt f`$). Projection must map this box onto the NDC cube $`[-1, 1]^3`$. That takes a translation, which moves the box's center to the origin, followed by a scale:
 
 ```math
 P_{\text{ortho}} =
@@ -123,7 +123,7 @@ Subtracting the equations gives $`b\left(\frac1n - \frac1f\right) = -2`$, so
 b = -\frac{2fn}{f-n}, \qquad a = -\frac{f+n}{f-n}.
 ```
 
-At the near plane $`-x/z`$ ranges over $`[l/n, r/n]`$ and $`-y/z`$ over $`[b/n, t/n]`$, where $`l, r, b, t`$ are the view window's edges measured **on the near plane**. Scaling and centering those ranges onto $`[-1, 1]`$ gives the general **frustum** matrix:
+At the near plane $`-x/z`$ ranges over $`[l/n, r/n]`$ and $`-y/z`$ over $`[b/n, t/n]`$, where $`l, r, b, t`$ are the view window's edges measured **on the near plane**. Scaling and centering those ranges onto $`[-1, 1]`$ gives $`x_{\text{ndc}} = \frac{2n}{r-l}\left(-\frac{x}{z}\right) - \frac{r+l}{r-l}`$. The matrix has to produce this *before* the divide by $`w = -z`$, so multiply through by $`-z`$: $`x_{\text{clip}} = \frac{2n}{r-l}\,x + \frac{r+l}{r-l}\,z`$. That is why the centering term sits in the $`z`$ column, with a plus sign. Doing the same for $`y`$ gives the general **frustum** matrix:
 
 ```math
 P_{\text{frustum}} =
@@ -148,7 +148,7 @@ P_{\text{persp}} =
 \qquad c = \frac{1}{\tan(\text{fovy}/2)}.
 ```
 
-In TinyGraphics these are `Mat4.frustum(l, r, b, t, n, f)` and `Mat4.perspective(fovy, aspect, n, f)`. Like OpenGL's, both take $`n`$ and $`f`$ as **positive distances**.
+In TinyGraphics these are `Mat4.frustum(l, r, b, t, n, f)` and `Mat4.perspective(fovy, aspect, n, f)`, and §6.3's box is `Mat4.orthographic(l, r, b, t, n, f)`. Like OpenGL's, all three take $`n`$ and $`f`$ as **positive distances**. `fovy` is the full vertical angle **in radians**, as in `Mat4.perspective(Math.PI / 4, width / height, 1, 500)`. Passing `90` as if it were degrees gives a nonsense field of view, with no error.
 
 ### Depth precision is not uniform
 
@@ -182,6 +182,8 @@ if fragment.depth < depth_buffer[x, y]:
     color_buffer[x, y] = fragment.color
 ```
 
+The depth compared here is window depth: the viewport maps $`z_{\text{ndc}} \in [-1, 1]`$ to $`[0, 1]`$, near to far. Clearing the depth buffer sets every entry to $`1`$, the far plane. If you forget to clear it, last frame's depths hide this frame's geometry.
+
 | Advantages | Disadvantages |
 |---|---|
 | no sorting; draw order does not matter for opaque surfaces | extra memory: one depth value per pixel |
@@ -213,7 +215,7 @@ Each change below holds all other parameters fixed. For a perspective camera:
 2. Using the orthographic projection with $`l = -10, r = 10, b = -10, t = 10, n = 1, f = 21`$, find the NDC of the camera-space point from question 1.
 3. Using a perspective projection with fovy $`= 90°`$, aspect $`1`$, $`n = 1`$, $`f = 21`$, find the clip coordinates and NDC of the same camera-space point.
 4. Prove that a perspective projection maps every point on the near plane to $`z_{\text{ndc}} = -1`$, regardless of $`x`$ and $`y`$.
-5. With $`n = 0.1`$ and $`f = 100`$, what fraction of the NDC depth range is used by camera depths between 0.1 and 1?
+5. With $`n = 0.1`$ and $`f = 100`$, §6.4 says $`z = -1`$ maps to $`z_{\text{ndc}} \approx 0.80`$. Where does $`z = -1`$ map if the far plane is moved out to $`f = 1000`$? Where does $`z = -10`$ map if instead the near plane is moved to $`n = 1`$, keeping $`f = 100`$? What do the two results say about which plane to adjust?
 6. Why must clipping happen before the perspective divide?
 
 <details><summary>Answers</summary>
@@ -229,8 +231,8 @@ Each change below holds all other parameters fixed. For a perspective camera:
 2. $`x = 2/20 \cdot 1 = 0.1`$ and $`y = 0.1`$. $`z = -\tfrac{2}{20}(-11) - \tfrac{22}{20} = 1.1 - 1.1 = 0`$. NDC $`(0.1, 0.1, 0)`$: exactly halfway through the depth range, as it should be, since $`-11`$ is halfway between $`-1`$ and $`-21`$.
 3. $`c = 1/\tan\, 45° = 1`$, $`a = -22/20 = -1.1`$, $`b = -42/20 = -2.1`$. Clip coordinates $`= (1,\ 1,\ -1.1\cdot(-11) - 2.1,\ 11) = (1, 1, 10, 11)`$. NDC $`= (1/11, 1/11, 10/11) \approx (0.091, 0.091, 0.909)`$. Compare with question 2: the same point sits much deeper in NDC under perspective, which is the non-uniform precision of §6.4.
 4. $`z_{\text{ndc}} = -a - b/z`$. At $`z = -n`$ this is $`\frac{f+n}{f-n} - \frac{2fn}{(f-n)n} = \frac{f + n - 2f}{f-n} = -1`$. $`x`$ and $`y`$ do not appear in the formula.
-5. $`z = -0.1 \mapsto -1`$ and $`z = -1 \mapsto \approx 0.8018`$, so the range used is $`1.8018`$ out of $`2`$, about **90%**.
-6. After the divide, points behind the camera ($`w \lt 0`$) flip through the origin and land in front, and points near the eye ($`w \approx 0`$) blow up. In clip space, the tests $`-w \le x, y, z \le w`$ are linear and handle both cases.
+5. With the original planes, $`z = -1 \mapsto \approx 0.8018`$. With $`f = 1000`$: $`a = -1000.1/999.9`$ and $`b = -200/999.9`$, so $`z = -1 \mapsto \approx 0.8002`$, almost unchanged. With $`n = 1`$: $`a = -101/99`$ and $`b = -200/99`$, so $`z = -10 \mapsto \approx 0.8182`$: about 90% of the range now covers depths 1 to 10 instead of 0.1 to 1. The crowding follows the ratio $`-z/n`$, so pushing $`n`$ out pushes the crowded zone out with it, while moving $`f`$ barely matters.
+6. Clipping cuts triangles, and the new vertices it creates come from linear interpolation along edges. That interpolation is correct in clip space, where everything is still linear, but not after the divide. An edge from a vertex in front of the camera ($`w \gt 0`$) to one behind it ($`w \lt 0`$) passes through $`w = 0`$, where the divided coordinates go to infinity, so after the divide it turns into two pieces heading off in opposite directions. Clipping first also avoids dividing by $`w \approx 0`$ at all. In clip space the tests $`-w \le x, y, z \le w`$ are linear, and no point with $`w \lt 0`$ can pass them.
 
 </details>
 

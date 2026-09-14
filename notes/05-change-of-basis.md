@@ -10,7 +10,7 @@ Chapter 4 read matrices as operations that **move points**. There is a second, e
 
 ![Change of basis](../figures/change-of-basis.svg)
 
-Let frame $`C_1`$ have origin $`O`$ and orthonormal axes $`𝐢, 𝐣, 𝐤`$. Apply a transformation $`M_1`$ to the whole frame, and you get a new frame $`C_2`$ with origin $`O'`$ and axes $`𝐢', 𝐣', 𝐤'`$:
+Let frame $`C_1`$ have origin $`O`$ and orthonormal axes $`𝐢, 𝐣, 𝐤`$. Apply a transformation $`M_1`$, written in $`C_1`$'s own coordinates, to the whole frame, and you get a new frame $`C_2`$ with origin $`O'`$ and axes $`𝐢', 𝐣', 𝐤'`$:
 
 ```math
 \begin{bmatrix} 𝐢' & 𝐣' & 𝐤' & O' \end{bmatrix}
@@ -51,7 +51,7 @@ i'_z & j'_z & k'_z & O'_z \\
 
 **To build a frame matrix, write its axes and its origin as columns.**
 
-When the new axes are orthonormal, $`M_1`$ splits into a rotation followed by a translation, $`M_1 = T R`$:
+When the new axes are orthonormal and right-handed ($`𝐤' = 𝐢' \times 𝐣'`$), $`M_1`$ splits into a rotation followed by a translation, $`M_1 = T R`$:
 
 ```math
 R = \begin{bmatrix} i'_x & j'_x & k'_x & 0 \\ i'_y & j'_y & k'_y & 0 \\ i'_z & j'_z & k'_z & 0 \\ 0&0&0&1 \end{bmatrix},
@@ -85,6 +85,8 @@ Now transform $`C_2`$ by $`M_2`$ to get $`C_3`$, where $`M_2`$ is expressed **in
 
 Composing frame changes, each described relative to the previous frame, multiplies matrices **on the right**. This is exactly the "left to right, moving frame" reading of chapter 4, and exactly what `model = model.times(next)` does. A hierarchical model is a chain of frames, and drawing a part converts its coordinates all the way back to the world.
 
+If $`M_2`$ is instead written in $`C_1`$'s (world) coordinates, it acts on the whole frame $`M_1`$ from the left: $`𝐩_{C_1} = M_2 M_1\, 𝐩_{C_3}`$. That is chapter 4's "right to left, fixed axes" reading. The same product can be read either way; what differs is the frame each factor is written in.
+
 ## 5.4 The camera is just another frame
 
 A camera is a frame too. Its origin is the eye point, and it looks down its own $`-𝐤'`$ axis with $`𝐣'`$ pointing up. Put the camera's axes and eye position into $`M_{\text{cam}}`$ as columns, as in §5.2. Then
@@ -94,6 +96,8 @@ A camera is a frame too. Its origin is the eye point, and it looks down its own 
 ```
 
 $`M_{\text{cam}}^{-1}`$ is the **view matrix**. It is what `program_state.set_camera()` expects and what `Mat4.look_at()` returns.
+
+A common mistake is to pass $`M_{\text{cam}}`$ itself to `set_camera()`. The scene then moves opposite to the way the camera should. If you have built the camera's frame matrix, for example to attach the camera to a moving object, pass it to `program_state.set_camera_transform()`, which inverts it for you.
 
 **Building the camera frame from an eye point, a target and an up hint:**
 
@@ -146,6 +150,7 @@ So $`𝐩_{\text{cam}} = (1, 0, -10)`$. $`P`$ is 10 units in front of the camera
 2. Why is $`M^{-1}`$ of a rigid frame (rotation plus translation) easy to compute, while $`M^{-1}`$ of a general $`4 \times 4`$ matrix is not?
 3. A camera sits at $`(0, 5, 0)`$ looking at the origin with up hint $`(0, 0, -1)`$. Compute $`𝐢'`$, $`𝐣'`$, $`𝐤'`$.
 4. What goes wrong if you pass look-at the up hint $`(0, 1, 0)`$ for the camera in question 3?
+5. `model = Mat4.translation(2, 0, 0).times(Mat4.rotation(Math.PI / 2, 0, 0, 1))`. A point has coordinates $`(1, 0, 0)`$ in the model's frame. What are its world coordinates? What are the model-frame coordinates of the world point $`(2, 3, 0)`$?
 
 <details><summary>Answers</summary>
 
@@ -153,6 +158,7 @@ So $`𝐩_{\text{cam}} = (1, 0, -10)`$. $`P`$ is 10 units in front of the camera
 2. A rigid frame's inverse is $`R^{𝖳}`$ combined with a translation by the rotated, negated origin. It needs no division, and no determinant or cofactors. A general matrix needs Gaussian elimination or cofactors, and may not be invertible at all.
 3. $`𝐤' = (0, 1, 0)`$. $`𝐢' = (0,0,-1) \times (0,1,0) = (1, 0, 0)`$. $`𝐣' = (0,1,0) \times (1,0,0) = (0, 0, -1)`$. The camera looks straight down, with world $`-z`$ at the top of the image.
 4. The up hint is parallel to $`𝐤'`$, so $`𝐯_{\text{up}} \times 𝐤' = 𝟎`$. Normalizing a zero vector divides by zero, and the frame is undefined. `Mat4.look_at` throws an error in this case.
+5. The frame's axes and origin are the columns of `model`: $`𝐢' = (0, 1, 0)`$, $`𝐣' = (-1, 0, 0)`$, $`O' = (2, 0, 0)`$. World: $`O' + 1\cdot𝐢' = (2, 1, 0)`$. Back: $`P - O' = (0, 3, 0)`$, so $`x' = 𝐢'\cdot(P - O') = 3`$ and $`y' = 𝐣'\cdot(P - O') = 0`$, giving $`(3, 0, 0)`$.
 
 </details>
 

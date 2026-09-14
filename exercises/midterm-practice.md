@@ -1,12 +1,12 @@
 # Practice problems I · Foundations, transformations, viewing
 
-Covers chapters 1–6. Try each problem before opening its solution. Every numeric answer here is recomputed by [`tools/check-math.mjs`](../tools/check-math.mjs), so if the notes and the arithmetic ever disagree, the check fails.
+Covers chapters 0–6. Try each problem before opening its solution. The numeric answers here are recomputed by [`tools/check-math.mjs`](../tools/check-math.mjs), so if the notes and the arithmetic ever disagree, the check fails.
 
 ---
 
 ### 1. Buffering
 
-What is the difference between drawing to a single-buffered and a double-buffered display? Which one does a WebGL canvas behave like?
+What is the difference between drawing to a single-buffered and a double-buffered display? Which one does a WebGL canvas behave like? (See the frame loop in chapter 0.)
 
 <details><summary>Solution</summary>
 
@@ -192,5 +192,39 @@ With near $`= 0.1`$ and far $`= 100`$, what NDC depth does a point 1 unit in fro
 $`z_{\text{ndc}} = -a - b/z`$ with $`a = -\tfrac{100.1}{99.9}`$ and $`b = -\tfrac{20}{99.9}`$. At $`z = -1`$ this gives $`z_{\text{ndc}} = 0.8018`$.
 
 The first unit in front of the camera uses about 90% of the depth range, leaving about 10% for the other 99 units. Keep the near plane as far out as the scene allows.
+
+</details>
+
+### 12. Winding and back faces
+
+Triangle $`A = (0, 0, 0)`$, $`B = (0, 2, 0)`$, $`C = (2, 0, 0)`$ is viewed by a camera at $`(0, 0, 5)`$ looking at the origin.
+(a) Find its face normal $`(B - A)\times(C - A)`$.
+(b) Is the triangle front- or back-facing? Is it drawn when `gl.CULL_FACE` is enabled?
+(c) What is its area?
+(d) How do you make it front-facing?
+
+<details><summary>Solution</summary>
+
+(a) $`(0, 2, 0)\times(2, 0, 0) = (0, 0, -4)`$.
+
+(b) $`(\text{eye} - A)\cdot𝐍 = (0, 0, 5)\cdot(0, 0, -4) = -20 \lt 0`$, so the normal points away from the camera: **back-facing**. On screen, $`A \to B \to C`$ goes up, then down to the right, which is clockwise. With culling enabled, it is not drawn.
+
+(c) $`\lVert𝐍\rVert / 2 = 2`$.
+
+(d) List the vertices as $`A, C, B`$: $`(2, 0, 0)\times(0, 2, 0) = (0, 0, 4)`$, pointing toward the camera.
+
+</details>
+
+### 13. A two-joint arm
+
+In the arm code of chapter 4 (§4.5), take $`x = 0`$, `shoulder_angle = Math.PI / 2` and `elbow_angle = -Math.PI / 2`. Find the world positions of the upper arm's center, the elbow, the forearm's center, and the forearm's far end. (The shapes span $`x \in [-1, 1]`$ in their own frames, so the far end is local $`(1, 0, 0)`$ of the final `arm` matrix.)
+
+<details><summary>Solution</summary>
+
+- **Upper arm's center.** $`T(1, 1.5)\,R(90°)\,T(1, 0)`$ maps the origin to $`(1, 1.5) + R(90°)(1, 0) = (1, 1.5) + (0, 1) = (1, 2.5)`$.
+- **Elbow.** One more $`T(1, 0)`$ along the rotated $`x`$ axis: $`(1, 3.5)`$.
+- **Forearm.** The two rotations add up to $`90° - 90° = 0°`$, so the forearm's local $`+x`$ is world $`+x`$. Its center is $`(2, 3.5)`$ and its far end is $`(3, 3.5)`$.
+
+Angles along a chain add up. The forearm is horizontal, even though its own joint angle is $`-90°`$.
 
 </details>

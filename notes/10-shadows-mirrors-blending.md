@@ -16,7 +16,7 @@ The lighting of chapter 7 is **local**: a fragment shader knows its own position
 
 **Idea.** A point is in shadow when it is *not the nearest thing the light can see* in its direction. Instead of asking, for every point, "which lights can see me?", render once from the light and remember what it sees.
 
-**Pass 1 — from the light.** Put the camera at the light: a perspective projection for a spotlight, orthographic for a directional light. Render the scene's **depth** into a texture, the **shadow map**. Each texel stores the distance to the nearest surface along that ray from the light.
+**Pass 1 — from the light.** Put the camera at the light: a perspective projection for a spotlight, orthographic for a directional light. Render the scene's **depth** into a texture, the **shadow map**. Each texel stores the depth of the nearest surface along that ray from the light. A point light shines in every direction, so no single frustum covers it: render six $`90°`$ passes into a cube map (an *omnidirectional* shadow map), or treat it as a spotlight. TinyGraphics lights with $`w = 1`$ are point lights.
 
 **Pass 2 — from the eye.** Render normally. For each fragment:
 
@@ -27,13 +27,13 @@ in_shadow = depth - bias > texture(shadow_map, uv).r
 color = ambient + (in_shadow ? 0 : diffuse + specular)
 ```
 
-`Render_Target` in TinyGraphics.js provides the texture for pass 1. [WebGL2 Fundamentals: shadows](https://webgl2fundamentals.org/webgl/lessons/webgl-shadows.html) walks through a complete implementation.
+`Render_Target` in TinyGraphics.js gives you the off-screen pass, but only its **color** texture can be sampled; its depth buffer is a renderbuffer. Either have the pass-1 fragment shader write depth into color (8 bits per channel is too coarse, so spread the value over several channels), or attach a `DEPTH_COMPONENT` texture to a framebuffer of your own. Whatever you store, pass 2 must compute the same quantity before comparing. Fragments whose `uv` falls outside $`[0, 1]`$, or whose depth is past 1, are outside the light's view: treat them as lit rather than sampling the clamped edge of the map. [WebGL2 Fundamentals: shadows](https://webgl2fundamentals.org/webgl/lessons/webgl-shadows.html) walks through a complete implementation.
 
 **Artifacts, and their standard fixes:**
 
 | Artifact | Cause | Fix |
 |---|---|---|
-| **shadow acne**: stripes of false shadow on lit surfaces | the surface compares against its own slightly-off depth | subtract a small **bias**, larger on slopes facing away from the light |
+| **shadow acne**: stripes of false shadow on lit surfaces | the surface compares against its own slightly-off depth | subtract a small **bias**, larger where light arrives at a grazing angle, for example $`\max(b_0\,(1 - 𝐧\cdot𝐥),\ b_{\min})`$ |
 | **peter-panning**: shadows detach from their casters | too much bias | a smaller, slope-scaled bias; render back faces into the map |
 | **jagged edges** | one shadow-map texel covers many screen pixels | higher resolution; **percentage-closer filtering** (average several comparisons); cascaded shadow maps for large scenes |
 
@@ -66,7 +66,7 @@ A fragment's **alpha** $`A \in [0, 1]`$ is its opacity. Drawing a translucent fr
 C = A_s\, C_s + (1 - A_s)\, C_d .
 ```
 
-In WebGL: `gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)`.
+In WebGL: `gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)`. TinyGraphics sets exactly this for you. It also applies the formula to the canvas's own alpha, which leaves a canvas partly transparent wherever a translucent fragment lands, so the page shows through. To keep the canvas opaque, blend alpha separately: `gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)`.
 
 **Order matters.** "Over" is not commutative, and the z-buffer (chapter 6) keeps only one depth per pixel. A translucent surface drawn first writes its depth, and a surface behind it that is drawn later is discarded, so it never shows through. The standard recipe:
 
@@ -90,7 +90,7 @@ Premultiplied alpha has several advantages:
 - Filtering and mipmapping stop producing dark or bright fringes around cut-out edges.
 - Additive glows are expressible directly: $`A = 0`$ with nonzero color.
 
-The WebGL settings are `gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)`. Particle systems and compositing pipelines use this form almost universally.
+The WebGL settings are `gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)`. The colors must then really be premultiplied: output `vec4(color.rgb * color.a, color.a)` from the shader, or upload textures with `gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true)`. TinyGraphics' `Texture` uploads straight alpha, and mixing the two conventions brightens every translucent edge. Particle systems and compositing pipelines use this form almost universally.
 
 ---
 

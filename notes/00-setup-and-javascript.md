@@ -18,7 +18,7 @@ Every example in these notes runs in a web browser through **WebGL 2**, a JavaSc
 | **OpenGL ES** | The embedded-systems subset of OpenGL (phones, consoles). |
 | **WebGL 1 / 2** | JavaScript bindings for OpenGL ES 2.0 / 3.0, drawing into an HTML `<canvas>`. |
 | **GLSL** | The C-like language that shaders are written in. WebGL 2 uses GLSL ES 3.00. |
-| **TinyGraphics.js** | A small teaching library over WebGL 2 that these notes use from chapter 2 on. |
+| **TinyGraphics.js** | A small teaching library over WebGL 2 that these notes use from chapter 3 on. |
 
 ## 0.2 Running the demos
 
@@ -33,7 +33,7 @@ You also need an editor with a JavaScript debugger, such as VS Code or WebStorm,
 
 1. **Console.** Errors, including shader compile errors, appear here. `console.log` any matrix you doubt.
 2. **Sources and breakpoints.** Pause inside `display()` and inspect every variable.
-3. **Workspaces / local overrides.** Edit files directly in the browser and save them to disk.
+3. **Workspaces.** Map the project folder in DevTools, so that edits made in the browser are saved to your real files. (Local overrides save to a separate copy, not to your source.)
 
 ## 0.3 The JavaScript you need
 
@@ -98,6 +98,8 @@ make_control_panel() {
 }
 ```
 
+With a regular function instead, `function () { this.spinning = !this.spinning; }`, `this` is whatever the caller supplies when the button fires, not your scene. The toggle then silently changes the wrong object, or throws.
+
 ### Closures
 
 A function remembers the variables in scope where it was created, even after that scope has returned:
@@ -155,21 +157,21 @@ every frame:        update time and state → set camera & lights → draw each 
 on user input:      change state (the next frame shows it)
 ```
 
-The browser calls your frame function about 60 times a second, via `requestAnimationFrame`. Anything expensive, such as creating a shape or compiling a shader, belongs in setup, never in the per-frame code.
+The browser calls your frame function once per display refresh, via `requestAnimationFrame`: often 60 times a second, but 120 or more on many laptops and phones, and not at all while the tab is hidden. So animate from elapsed time, never from a frame count (chapter 12). The canvas is **double-buffered**: you draw into a hidden back buffer, and the browser shows it only after your frame function returns, so nobody ever sees a half-drawn frame. Anything expensive, such as creating a shape or compiling a shader, belongs in setup, never in the per-frame code.
 
 ---
 
 ## Check yourself
 
 1. Why does `for (var i = 0; i < 3; i++) setTimeout(() => console.log(i))` print `3 3 3`, while the same loop with `let` prints `0 1 2`?
-2. You wrote `const a = Mat4.identity(); const b = a; b[0][3] = 5;`. What is `a[0][3]`, and how do you avoid the surprise?
+2. You wrote `const base = Mat4.identity(); const arm = base; arm.post_multiply(Mat4.translation(0, 1, 0));`. What happened to `base`, and how do you avoid it?
 3. Why is `new Cube()` inside a function that runs every frame a performance bug, even though it looks harmless?
 
 <details><summary>Answers</summary>
 
 1. `var` creates one `i` shared by the whole function. By the time the timeouts run, the loop has finished and `i` is 3. `let` creates a fresh binding for each iteration, and each arrow function closes over its own.
-2. `5`. `a` and `b` name the same matrix. Use `const b = a.copy()` when you want an independent value.
-3. Creating a shape builds its vertex arrays in JavaScript and uploads them to GPU memory. Doing that 60 times a second wastes CPU time, GPU memory and bus transfers. Build it once and draw it many times.
+2. `base` moved too. `arm` and `base` name the same matrix, and `post_multiply` changes its matrix in place. Write `const arm = base.copy()`, or use `base.times(...)`, which returns a new matrix.
+3. Creating a shape builds its vertex arrays in JavaScript and uploads them to GPU memory. Doing that 60 times a second wastes CPU time, GPU memory and bus transfers. Build it once and draw it many times. TinyGraphics notices this mistake: after about 200 uploads it throws an error saying you are sending a lot of object definitions to the GPU.
 
 </details>
 

@@ -40,7 +40,7 @@ S = \begin{bmatrix} s_x&0&0&0 \\ 0&s_y&0&0 \\ 0&0&s_z&0 \\ 0&0&0&1 \end{bmatrix}
 \qquad S^{-1} = S(1/s_x, 1/s_y, 1/s_z).
 ```
 
-With $`s_x = s_y = s_z`$ the scale is **uniform** and preserves angles. A negative factor mirrors the shape.
+With $`s_x = s_y = s_z`$ the scale is **uniform** and preserves angles. An odd number of negative factors mirrors the shape (its determinant is negative). Two negative factors are just a $`180°`$ rotation.
 
 **Rotation** by angle $`\theta`$ about a coordinate axis, counter-clockwise when looking from the positive axis toward the origin (the right-hand rule):
 
@@ -66,7 +66,7 @@ R = \cos\, \theta\, I + \sin\, \theta\, [\hat{𝐚}]_\times + (1 - \cos\, \theta
 [\hat{𝐚}]_\times = \begin{bmatrix} 0&-a_z&a_y \\ a_z&0&-a_x \\ -a_y&a_x&0 \end{bmatrix}.
 ```
 
-`Mat4.rotation(angle, x, y, z)` implements this formula.
+`Mat4.rotation(angle, x, y, z)` implements this formula. The angle is in **radians**, and the axis need not be unit length, because the function normalizes it.
 
 **Shear.** Each coordinate gains multiples of the others:
 
@@ -93,7 +93,7 @@ Matrix multiplication is **not commutative**, and neither are transformations.
 
 ![Transformation order](../figures/transform-order.svg)
 
-In $`M = T\,R`$ applied to a point $`𝐩`$, the matrix nearest $`𝐩`$ acts first: $`M𝐩 = T(R\,𝐩)`$. So $`TR`$ rotates and then translates, while $`RT`$ translates and then rotates about the origin, swinging the object around it. The same holds for scaling: $`TS`$ scales in place and then moves, while $`ST`$ also scales the translation distance.
+In $`M = T\,R`$ applied to a point $`𝐩`$, the matrix nearest $`𝐩`$ acts first: $`M𝐩 = T(R\,𝐩)`$. In TinyGraphics, `T.times(R)` is the product $`T\,R`$, so the rotation acts on the point first. So $`TR`$ rotates and then translates, while $`RT`$ translates and then rotates about the origin, swinging the object around it. The same holds for scaling: $`TS`$ scales in place and then moves, while $`ST`$ also scales the translation distance.
 
 There are two equally valid ways to read a product such as $`M = T\,R\,S`$:
 
@@ -133,6 +133,8 @@ Where does the F end up, and which way do its stem and arms point?
 
 **Frame reading.** Move the frame to $`(2, 1)`$. Rotate it $`90°`$ counter-clockwise, so its $`x`$ axis points world $`+y`$ and its $`y`$ axis points world $`-x`$. Then flip its $`x`$ axis, so it now points world $`-y`$. The F's origin is at $`(2, 1)`$, its stem (local $`+y`$) points **left**, and its arms (local $`+x`$, flipped) point **down**.
 
+**Fixed-axes reading.** Apply the steps right to left, always about the world's origin and axes. $`S(-1, 1)`$ flips the F across the $`y`$ axis, so its arms point left. $`R_z(90°)`$ swings it counter-clockwise about the origin: the stem now points left and the arms point down. $`T`$ then carries the base of the stem from the origin to $`(2, 1)`$. Same result, with the steps read in the opposite order.
+
 **Matrix check.** With $`R = R_z(90°)`$ and $`S = S(-1, 1)`$, the linear part is
 
 ```math
@@ -141,7 +143,7 @@ R\,S = \begin{bmatrix} 0&-1 \\ 1&0 \end{bmatrix}\begin{bmatrix} -1&0 \\ 0&1 \end
 M = \begin{bmatrix} 0&-1&0&2 \\ -1&0&0&1 \\ 0&0&1&0 \\ 0&0&0&1 \end{bmatrix}.
 ```
 
-The stem tip at local $`(0, 2)`$ maps to $`(0\cdot0 - 1\cdot2 + 2,\; -1\cdot0 + 0\cdot2 + 1) = (0, 1)`$: two units left of the origin. An arm tip at local $`(1, 2)`$ maps to $`(0, 0)`$, one unit below the stem tip. Both readings agree.
+The stem tip at local $`(0, 2)`$ maps to $`(0\cdot0 - 1\cdot2 + 2,\; -1\cdot0 + 0\cdot2 + 1) = (0, 1)`$: two units left of the origin. An arm tip at local $`(1, 2)`$ maps to $`(0, 0)`$, one unit below the stem tip. All three agree. Note that $`\det M = -1`$: the F is mirrored, so its triangles' winding flips, and back-face culling (chapter 3) would now hide its front.
 
 Try other orders in [demo 02](https://luckiday.github.io/graphics-foundations/demos/02-transformations.html), which draws every intermediate frame.
 
@@ -215,7 +217,7 @@ There are two styles:
 2. $`T\,S`$: scale to $`(2, 2)`$, then translate to $`(5, 2)`$. $`S\,T`$: translate to $`(4, 1)`$, then scale to $`(8, 2)`$.
 3. $`T(4,5,0)\; R_z(\theta)\; T(-4,-5,0)`$.
 4. $`\hat{𝐧} = (1, 1, 0)/\sqrt2`$ and $`𝐩\cdot\hat{𝐧} = 3/\sqrt2`$, so $`𝐩' = 𝐩 - 2\cdot\tfrac{3}{\sqrt2}\cdot\tfrac{(1,1,0)}{\sqrt2} = (1,2,3) - (3,3,0) = (-2, -1, 3)`$.
-5. The child's matrix is $`S\,R`$. Its linear part $`S\,R_z`$ stretches the *rotated* $`y`$ direction, so the child's axes stop being perpendicular after the scale. A non-orthogonal pair of axes is a shear.
+5. The child's matrix is $`S\,R`$. Its linear part $`S\,R_z`$ first rotates the child's axes, then triples each one's component along the *parent's* $`y`$ axis. The rotated axes $`(\cos\, \theta, \sin\, \theta)`$ and $`(-\sin\, \theta, \cos\, \theta)`$ become $`(\cos\, \theta, 3\sin\, \theta)`$ and $`(-\sin\, \theta, 3\cos\, \theta)`$, whose dot product is $`8\sin\, \theta\cos\, \theta`$. That is nonzero unless $`\theta`$ is a multiple of $`90°`$. A non-orthogonal pair of axes is a shear.
 6. No. $`(TR)^{-1} = R^{-1}T^{-1}`$: undo the last step first.
 
 </details>

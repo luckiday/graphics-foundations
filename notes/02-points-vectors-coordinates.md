@@ -43,6 +43,8 @@ P =
 \begin{bmatrix} p_1 \\ p_2 \\ p_3 \\ 1 \end{bmatrix}.
 ```
 
+Each column is itself written in homogeneous form, in some reference frame: $`𝐚, 𝐛, 𝐜`$ get a fourth entry of 0, and $`O`$ gets 1. So the matrix's bottom row is $`[0\ 0\ 0\ 1]`$, which carries the input's fourth coordinate through unchanged. Chapter 5 builds on exactly this matrix.
+
 This is the idea behind **homogeneous coordinates**: **vectors have $`w = 0`$ and points have $`w = 1`$.** The table in §2.1 then follows from ordinary arithmetic on the fourth coordinate:
 
 - point − point: $`1 - 1 = 0`$, a vector.
@@ -59,6 +61,8 @@ It also makes translation work automatically. A $`4 \times 4`$ translation matri
 ```
 
 Homogeneous coordinates have one more use. A perspective projection (chapter 6) produces $`w \ne 1`$, and the point it represents is $`(x/w,\ y/w,\ z/w)`$.
+
+In TinyGraphics, `vec3(1, 2, 3).to4(true)` gives the point $`(1, 2, 3, 1)`$, and `.to4(false)` gives the vector $`(1, 2, 3, 0)`$.
 
 ## 2.3 Linear, affine and convex combinations
 
@@ -80,7 +84,7 @@ which is a point plus vectors. The fourth coordinate agrees: $`\sum \alpha_i \cd
 
 ![Affine and convex combinations](../figures/combinations.svg)
 
-For two points, the affine combinations $`\alpha P + (1 - \alpha) Q`$ trace the entire **line** through $`P`$ and $`Q`$. The convex ones, with $`0 \le \alpha \le 1`$, give just the **segment** between them. For three points, the affine combinations fill the whole **plane**; the convex ones fill the **triangle**.
+For two points, the affine combinations $`\alpha P + (1 - \alpha) Q`$ trace the entire **line** through $`P`$ and $`Q`$. The convex ones, with $`0 \le \alpha \le 1`$, give just the **segment** between them. For three points not on one line, the affine combinations fill the whole **plane**; the convex ones fill the **triangle**.
 
 ## 2.4 Parametric lines, planes and triangles
 
@@ -110,7 +114,7 @@ which covers every point of the triangle.
 
 ## 2.5 Barycentric coordinates
 
-Expanding $`T(\alpha, \beta)`$ shows that every point of the plane of $`PQR`$ can be written in exactly one way as
+Expanding $`T(\alpha, \beta)`$ gives weights $`\alpha\beta`$, $`(1-\alpha)\beta`$ and $`1-\beta`$ on $`P`$, $`Q`$ and $`R`$, which always sum to 1. Now forget that parametrization, and allow any three weights that sum to 1. If $`P, Q, R`$ are not collinear, every point of their plane can be written in exactly one way as
 
 ```math
 X = \alpha P + \beta Q + \gamma R, \qquad \alpha + \beta + \gamma = 1.
@@ -123,7 +127,7 @@ The triple $`(\alpha, \beta, \gamma)`$ is the **barycentric coordinate** of $`X`
 | Where $`X`$ is | Barycentric coordinates |
 |---|---|
 | at a vertex | $`(1,0,0)`$, $`(0,1,0)`$ or $`(0,0,1)`$ |
-| on an edge | one coordinate is 0 |
+| on an edge | one coordinate is 0, the other two $`\ge 0`$ |
 | at the centroid | $`(\tfrac13, \tfrac13, \tfrac13)`$ |
 | inside | all three $`\gt 0`$ |
 | outside | at least one $`\lt 0`$ |
@@ -138,7 +142,9 @@ Each weight is also a ratio of areas. $`\alpha`$ is the area of the sub-triangle
 \gamma = 1 - \alpha - \beta,
 ```
 
-where a signed area comes from a cross product, $`\mathrm{area}(A, B, C) = \tfrac12\,((B - A) \times (C - A)) \cdot \hat{𝐧}`$.
+where a **signed** area comes from a cross product, $`\mathrm{area}(A, B, C) = \tfrac12\,((B - A) \times (C - A)) \cdot \hat{𝐧}`$, and $`\hat{𝐧}`$ is the unit normal of $`PQR`$, the same for all three areas. In 2D this is $`\tfrac12\,\big((B-A)_x (C-A)_y - (B-A)_y (C-A)_x\big)`$. The sign is what makes a weight negative: when $`X`$ is outside, one sub-triangle winds the other way, so its area and its weight are negative.
+
+**Example.** $`P = (0,0)`$, $`Q = (4,0)`$, $`R = (0,4)`$ and $`X = (1,1)`$. The areas are $`\mathrm{area}(P,Q,R) = 8`$, $`\mathrm{area}(X,Q,R) = 4`$ and $`\mathrm{area}(P,X,R) = 2`$, so $`(\alpha, \beta, \gamma) = (\tfrac12, \tfrac14, \tfrac14)`$. Check: $`\tfrac12 P + \tfrac14 Q + \tfrac14 R = (1, 1)`$.
 
 ## 2.6 What the dot and cross products mean
 
@@ -154,7 +160,9 @@ where a signed area comes from a cross product, $`\mathrm{area}(A, B, C) = \tfra
 | zero | perpendicular |
 | negative | obtuse: roughly opposite directions |
 
-Uses: the angle between vectors; projecting $`𝐯`$ onto a unit vector $`\hat{𝐮}`$, whose length is $`𝐯 \cdot \hat{𝐮}`$; testing which side of a plane a point is on; and the cosine factor in diffuse lighting (chapter 7).
+The dot product also gives length, $`\lVert𝐯\rVert = \sqrt{𝐯 \cdot 𝐯}`$. **Normalizing** divides by it, $`\hat{𝐯} = 𝐯 / \lVert𝐯\rVert`$, which keeps the direction and makes the length 1.
+
+Uses: the angle between vectors; projecting $`𝐯`$ onto a unit vector $`\hat{𝐮}`$, whose signed length is $`𝐯 \cdot \hat{𝐮}`$ (only if $`\hat{𝐮}`$ really has length 1, a common mistake); testing which side of a plane a point is on; and the cosine factor in diffuse lighting (chapter 7).
 
 **Cross product** (3D only).
 
@@ -170,7 +178,7 @@ Its direction is perpendicular to both inputs, following the right-hand rule. It
 
 1. For unit vectors $`𝐮`$ and $`𝐯`$, what can you say about the angle between them if $`𝐮 \cdot 𝐯`$ is (a) $`0.3`$, (b) $`-1`$, (c) $`0`$? If the vectors are not unit length and $`𝐮 \cdot 𝐯 = -1.5`$, what can you still say?
 2. Is $`0.5P + 0.8Q - 0.3R`$ a point? Is it inside triangle $`PQR`$?
-3. What are the barycentric coordinates of the midpoint of edge $`QR`$?
+3. With $`P = (0,0)`$, $`Q = (4,0)`$, $`R = (0,4)`$, find the barycentric coordinates of $`X = (3,3)`$. Is $`X`$ inside the triangle?
 4. A triangle has vertices $`A = (0,0,0)`$, $`B = (2,0,0)`$, $`C = (0,3,0)`$. Find a unit normal and the triangle's area.
 5. Why is the homogeneous coordinate of a vector 0 rather than 1?
 
@@ -178,7 +186,7 @@ Its direction is perpendicular to both inputs, following the right-hand rule. It
 
 1. (a) $`\cos\, \theta = 0.3`$, so $`\theta \approx 72.5°`$: acute. (b) $`\theta = 180°`$: exactly opposite. (c) $`\theta = 90°`$: perpendicular. With non-unit vectors, only the sign is informative: $`-1.5 \lt 0`$ means the angle is obtuse.
 2. The weights sum to $`0.5 + 0.8 - 0.3 = 1`$, so it is an affine combination and therefore a point. One weight is negative, so it is not a convex combination and lies **outside** the triangle.
-3. $`(0, \tfrac12, \tfrac12)`$.
+3. $`\mathrm{area}(P,Q,R) = 8`$, $`\mathrm{area}(X,Q,R) = -4`$ and $`\mathrm{area}(P,X,R) = 6`$, so $`(\alpha, \beta, \gamma) = (-\tfrac12, \tfrac34, \tfrac34)`$. The weights sum to 1, but $`\alpha \lt 0`$: $`X`$ is outside, beyond edge $`QR`$.
 4. $`(B - A) \times (C - A) = (2,0,0) \times (0,3,0) = (0, 0, 6)`$. The unit normal is $`(0,0,1)`$ and the area is $`\tfrac12 \cdot 6 = 3`$.
 5. So that a translation matrix, which adds its offset times $`w`$, leaves vectors unchanged, and so that differences of points ($`1 - 1`$) come out as vectors automatically.
 
